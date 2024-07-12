@@ -9,7 +9,6 @@ public class Song : BaseEntity
     public long AlbumId { get; set; }
 
     public int Track { get; set; }
-    
     public string? Description { get; set; }
     public string Mimetype { get; set; }
     public bool PossiblyCorrupt { get; set; }

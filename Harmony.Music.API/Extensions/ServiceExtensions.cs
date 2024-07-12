@@ -25,7 +25,7 @@ public static class ServiceExtensions
     public static void ConfigureServiceManager(this IServiceCollection services) => services.AddScoped<IServiceManager, ServiceManager>();
 
     public static void ConfigurePostgresContext(this IServiceCollection services, IConfiguration configuration) =>
-        services.AddDbContext<RepositoryContext>(opts => opts.UseNpgsql(configuration.GetConnectionString("OAuthPostgresql")));
+        services.AddDbContext<RepositoryContext>(opts => opts.UseNpgsql(configuration.GetConnectionString("Postgresql")));
 
     // public static void AddJwtConfiguration(this IServiceCollection services, IConfiguration configuration) => services.Configure<JwtConfiguration>(configuration.GetSection("JwtSettings"));
 

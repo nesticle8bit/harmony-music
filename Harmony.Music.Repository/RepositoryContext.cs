@@ -8,11 +8,19 @@ public class RepositoryContext : DbContext
 {
     public RepositoryContext(DbContextOptions options) : base(options) { }
 
-    public DbSet<Song> Songs { get; set; }
+    public DbSet<Album> Album { get; set; }
+    public DbSet<Artist> Artist { get; set; }
+    public DbSet<ArtistAlbums> ArtistAlbums { get; set; }
+    public DbSet<Library> Library { get; set; }
+    public DbSet<Song> Song { get; set; }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new SongsMap());
+        modelBuilder.ApplyConfiguration(new AlbumsMap());
+        modelBuilder.ApplyConfiguration(new ArtistsMap());
+        modelBuilder.ApplyConfiguration(new ArtistAlbumsMap());
+        modelBuilder.ApplyConfiguration(new LibraryMap());
 
         base.OnModelCreating(modelBuilder);
     }
