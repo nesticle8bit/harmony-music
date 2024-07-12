@@ -7,4 +7,8 @@
         <RootNamespace>Harmony.Music.ServiceContracts</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Harmony.Music.Shared\Harmony.Music.Shared.csproj" />
+    </ItemGroup>
+
 </Project>

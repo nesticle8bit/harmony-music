@@ -10,7 +10,8 @@ public class MusicRepository : RepositoryBase<Song>, IMusicRepository
 
     public Song? GetSongByUniqueId(string uniqueId, bool trackChanges)
     {
-        return FindByCondition(x => x.UniqueId == uniqueId, trackChanges)
+        // TODO: fix
+        return FindByCondition(x => x.Lyrics == uniqueId, trackChanges)
             .FirstOrDefault();
     }
 }

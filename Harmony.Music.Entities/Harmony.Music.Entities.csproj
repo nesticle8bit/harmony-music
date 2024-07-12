@@ -16,4 +16,8 @@
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Harmony.Music.Shared\Harmony.Music.Shared.csproj" />
+    </ItemGroup>
+
 </Project>

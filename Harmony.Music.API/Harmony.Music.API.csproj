@@ -4,6 +4,8 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <RepositoryUrl>https://github.com/nesticle8bit/harmony-music</RepositoryUrl>
+        <PackageTags>music player, spotify clone</PackageTags>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +21,10 @@
       <ProjectReference Include="..\Harmony.Music.Repository\Harmony.Music.Repository.csproj" />
       <ProjectReference Include="..\Harmony.Music.Service\Harmony.Music.Service.csproj" />
       <ProjectReference Include="..\Harmony.Music.Shared\Harmony.Music.Shared.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\" />
     </ItemGroup>
 
 </Project>

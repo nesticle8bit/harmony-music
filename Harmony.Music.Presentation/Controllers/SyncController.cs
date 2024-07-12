@@ -11,13 +11,10 @@ public class SyncController : ControllerBase
 {
     private readonly IServiceManager _serviceManager;
     
-    public SyncController(IServiceManager serviceManager)
-    {
-        _serviceManager = serviceManager;
-    }
+    public SyncController(IServiceManager serviceManager) => _serviceManager = serviceManager;
     
-    [HttpGet("music")]
-    public IActionResult SyncMusic()
+    [HttpGet("music/{number}")]
+    public IActionResult SyncMusic(int number)
     {
         JsonObjectResult<dynamic> result = new()
         {
@@ -26,7 +23,7 @@ public class SyncController : ControllerBase
 
         try
         {
-            result.Data = "songId";
+            result.Data = _serviceManager.MusicService.GetMediaMetadata();
         }
         catch (Exception e)
         {

@@ -11,7 +11,7 @@ public static class ServiceExtensions
 {
     public static void ConfigureCors(this IServiceCollection services) => services.AddCors(options =>
     {
-        options.AddPolicy("SMARTECOAUTHCORS", builder =>
+        options.AddPolicy("HARMONYMUSICCORS", builder =>
             builder
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
