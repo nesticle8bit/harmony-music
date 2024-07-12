@@ -1,0 +1,17 @@
+Harmony.Music.API/bin
+Harmony.Music.API/obj
+Harmony.Music.Contracts/bin
+Harmony.Music.Contracts/obj
+Harmony.Music.Entities/bin
+Harmony.Music.Entities/obj
+Harmony.Music.Presentation/bin
+Harmony.Music.Presentation/obj
+Harmony.Music.Repository/bin
+Harmony.Music.Repository/obj
+Harmony.Music.Service/bin
+Harmony.Music.Service/obj
+Harmony.Music.Service.Contracts/bin
+Harmony.Music.Service.Contracts/obj
+Harmony.Music.Shared/bin
+Harmony.Music.Shared/obj
+.idea

@@ -1,0 +1,75 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{8D91C929-AE6D-4CA2-8805-3CE3A814D7B9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{084A00DA-82E3-4D2B-B73D-A6B791686BBE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{361D8CD1-95EF-4AFC-AC05-CD22B195D890}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{FD128AF0-19FC-4D7B-853D-203C612EF282}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Music.API", "Harmony.Music.API\Harmony.Music.API.csproj", "{46B8851D-463D-4277-9B05-F917798C58F2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Music.Contracts", "Harmony.Music.Contracts\Harmony.Music.Contracts.csproj", "{BC02ECF3-4C5D-4CA8-9FB0-065EE2CD364A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Music.Service", "Harmony.Music.Service\Harmony.Music.Service.csproj", "{94C89F2A-1BB0-4771-8C52-61BF16A8715B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Music.Service.Contracts", "Harmony.Music.Service.Contracts\Harmony.Music.Service.Contracts.csproj", "{B6DEF334-B5AE-4273-8654-56D5B7E0688D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Music.Entities", "Harmony.Music.Entities\Harmony.Music.Entities.csproj", "{DE60B096-3695-4C4D-BDCD-EC51080343D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Music.Repository", "Harmony.Music.Repository\Harmony.Music.Repository.csproj", "{F22177DF-0245-4487-86EF-E2A3C502BF46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Music.Shared", "Harmony.Music.Shared\Harmony.Music.Shared.csproj", "{DC2C5D0A-9201-41EC-A639-067C084E3B01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Harmony.Music.Presentation", "Harmony.Music.Presentation\Harmony.Music.Presentation.csproj", "{5048B14A-1ED0-4993-A07A-7360ECE159A6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{46B8851D-463D-4277-9B05-F917798C58F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46B8851D-463D-4277-9B05-F917798C58F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46B8851D-463D-4277-9B05-F917798C58F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46B8851D-463D-4277-9B05-F917798C58F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC02ECF3-4C5D-4CA8-9FB0-065EE2CD364A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC02ECF3-4C5D-4CA8-9FB0-065EE2CD364A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC02ECF3-4C5D-4CA8-9FB0-065EE2CD364A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC02ECF3-4C5D-4CA8-9FB0-065EE2CD364A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94C89F2A-1BB0-4771-8C52-61BF16A8715B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94C89F2A-1BB0-4771-8C52-61BF16A8715B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94C89F2A-1BB0-4771-8C52-61BF16A8715B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94C89F2A-1BB0-4771-8C52-61BF16A8715B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6DEF334-B5AE-4273-8654-56D5B7E0688D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6DEF334-B5AE-4273-8654-56D5B7E0688D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6DEF334-B5AE-4273-8654-56D5B7E0688D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6DEF334-B5AE-4273-8654-56D5B7E0688D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE60B096-3695-4C4D-BDCD-EC51080343D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE60B096-3695-4C4D-BDCD-EC51080343D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE60B096-3695-4C4D-BDCD-EC51080343D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE60B096-3695-4C4D-BDCD-EC51080343D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F22177DF-0245-4487-86EF-E2A3C502BF46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F22177DF-0245-4487-86EF-E2A3C502BF46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F22177DF-0245-4487-86EF-E2A3C502BF46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F22177DF-0245-4487-86EF-E2A3C502BF46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC2C5D0A-9201-41EC-A639-067C084E3B01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC2C5D0A-9201-41EC-A639-067C084E3B01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC2C5D0A-9201-41EC-A639-067C084E3B01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC2C5D0A-9201-41EC-A639-067C084E3B01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5048B14A-1ED0-4993-A07A-7360ECE159A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5048B14A-1ED0-4993-A07A-7360ECE159A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5048B14A-1ED0-4993-A07A-7360ECE159A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5048B14A-1ED0-4993-A07A-7360ECE159A6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BC02ECF3-4C5D-4CA8-9FB0-065EE2CD364A} = {8D91C929-AE6D-4CA2-8805-3CE3A814D7B9}
+		{94C89F2A-1BB0-4771-8C52-61BF16A8715B} = {8D91C929-AE6D-4CA2-8805-3CE3A814D7B9}
+		{B6DEF334-B5AE-4273-8654-56D5B7E0688D} = {8D91C929-AE6D-4CA2-8805-3CE3A814D7B9}
+		{DE60B096-3695-4C4D-BDCD-EC51080343D4} = {084A00DA-82E3-4D2B-B73D-A6B791686BBE}
+		{F22177DF-0245-4487-86EF-E2A3C502BF46} = {084A00DA-82E3-4D2B-B73D-A6B791686BBE}
+		{DC2C5D0A-9201-41EC-A639-067C084E3B01} = {084A00DA-82E3-4D2B-B73D-A6B791686BBE}
+		{5048B14A-1ED0-4993-A07A-7360ECE159A6} = {FD128AF0-19FC-4D7B-853D-203C612EF282}
+	EndGlobalSection
+EndGlobal
