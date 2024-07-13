@@ -5,24 +5,21 @@ using Harmony.Music.Shared.DataTransferObjects.Music;
 
 namespace Harmony.Music.Repository.Repositories;
 
-public class SongRepository : RepositoryBase<Song>, ISongRepository
+public class ArtistRepository : RepositoryBase<Artist>, IArtistRepository
 {
-    public SongRepository(RepositoryContext context) : base(context)
+    public ArtistRepository(RepositoryContext context) : base(context)
     {
     }
 
-    public IQueryable<Song> SearchSongs(SearchSongDto search, bool trackChanges)
+    public IQueryable<Artist> SearchArtist(SearchArtistDto? search, bool trackChanges)
     {
         var query = FindAll(trackChanges);
 
         if (!string.IsNullOrEmpty(search?.Name))
             query = query.Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToLower().Trim() == search.Name.ToLower().Trim());
-        
-        if (search.AlbumId.HasValue)
-            query = query.Where(x => x.AlbumId == search.AlbumId.Value);
 
         return query;
     }
-    
-    public void CreateSong(Song song) => Create(song);
+
+    public void CreateArtist(Artist artist) => Create(artist);
 }

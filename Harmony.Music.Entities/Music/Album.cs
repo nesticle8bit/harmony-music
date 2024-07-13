@@ -26,5 +26,5 @@ public class Album : BaseEntity
     public List<string>? Genres { get; set; }
 
     public virtual ICollection<Song>? Songs { get; set; } = new HashSet<Song>();
-    public virtual ICollection<ArtistAlbums> ArtistAlbums { get; set; } = new HashSet<ArtistAlbums>();
+    public virtual ICollection<ArtistAlbums>? ArtistAlbums { get; set; } = new HashSet<ArtistAlbums>();
 }

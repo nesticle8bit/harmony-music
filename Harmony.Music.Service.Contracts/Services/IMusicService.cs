@@ -5,7 +5,7 @@ namespace Harmony.Music.ServiceContracts.Services;
 
 public interface IMusicService
 {
-    MediaMetadataDto GetMediaMetadata();
-
     LibrarySyncReportDto SyncLibrary();
+
+    ExtractMusicMetadataReportDto ExtractMusicMetadata();
 }

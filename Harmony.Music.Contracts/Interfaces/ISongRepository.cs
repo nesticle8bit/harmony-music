@@ -1,9 +1,11 @@
 using Harmony.Music.Entities.Music;
+using Harmony.Music.Shared.DataTransferObjects.Music;
 
 namespace Harmony.Music.Contracts.Interfaces;
 
 public interface ISongRepository
 {
-    Song? GetSongByUniqueId(string uniqueId, bool trackChanges);
+    IQueryable<Song> SearchSongs(SearchSongDto search, bool trackChanges);
     
+    void CreateSong(Song song);
 }

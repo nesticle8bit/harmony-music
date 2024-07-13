@@ -35,4 +35,27 @@ public class SyncController : ControllerBase
 
         return Ok(result);
     }
+    
+    [HttpGet("metadata")]
+    public IActionResult ExtractMusicMetadata()
+    {
+        JsonObjectResult<dynamic> result = new()
+        {
+            Status = (int)HttpStatusCode.OK
+        };
+
+        try
+        {
+            result.Data = _serviceManager.MusicService.ExtractMusicMetadata();
+        }
+        catch (Exception e)
+        {
+            result.Errors?.Add(e.Message);
+            result.Status = (int)HttpStatusCode.InternalServerError;
+
+            return StatusCode(result.Status, result);
+        }
+
+        return Ok(result);
+    }
 }
