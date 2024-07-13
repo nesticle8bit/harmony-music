@@ -4,5 +4,7 @@ namespace Harmony.Music.Contracts.Manager;
 
 public interface IRepositoryManager
 {
-    IMusicRepository MusicRepository { get; }
+    ISongRepository SongRepository { get; }
+
+    ILibraryRepository LibraryRepository { get; }
 }

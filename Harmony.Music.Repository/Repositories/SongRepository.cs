@@ -4,9 +4,9 @@ using Harmony.Music.Repository.RepositoryBase;
 
 namespace Harmony.Music.Repository.Repositories;
 
-public class MusicRepository : RepositoryBase<Song>, IMusicRepository
+public class SongRepository : RepositoryBase<Song>, ISongRepository
 {
-    public MusicRepository(RepositoryContext context) : base(context)  { }
+    public SongRepository(RepositoryContext context) : base(context)  { }
 
     public Song? GetSongByUniqueId(string uniqueId, bool trackChanges)
     {

@@ -10,11 +10,11 @@ namespace Harmony.Music.Presentation.Controllers;
 public class SyncController : ControllerBase
 {
     private readonly IServiceManager _serviceManager;
-    
+
     public SyncController(IServiceManager serviceManager) => _serviceManager = serviceManager;
-    
-    [HttpGet("music/{number}")]
-    public IActionResult SyncMusic(int number)
+
+    [HttpGet("library")]
+    public IActionResult SyncLibrary()
     {
         JsonObjectResult<dynamic> result = new()
         {
@@ -23,7 +23,7 @@ public class SyncController : ControllerBase
 
         try
         {
-            result.Data = _serviceManager.MusicService.GetMediaMetadata();
+            result.Data = _serviceManager.MusicService.SyncLibrary();
         }
         catch (Exception e)
         {

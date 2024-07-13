@@ -8,14 +8,17 @@ public class RepositoryManager : IRepositoryManager
 {
     private readonly RepositoryContext _repositoryContext;
 
-    private readonly Lazy<IMusicRepository> _musicRepository;
+    private readonly Lazy<ISongRepository> _songRepository;
+    private readonly Lazy<ILibraryRepository> _libraryRepository;
 
     public RepositoryManager(RepositoryContext repositoryContext)
     {
         _repositoryContext = repositoryContext;
 
-        _musicRepository = new Lazy<IMusicRepository>(() => new MusicRepository(repositoryContext));
+        _songRepository = new Lazy<ISongRepository>(() => new SongRepository(repositoryContext));
+        _libraryRepository = new Lazy<ILibraryRepository>(() => new LibraryRepository(repositoryContext));
     }
-    
-    public IMusicRepository MusicRepository => _musicRepository.Value;
+
+    public ISongRepository SongRepository => _songRepository.Value;
+    public ILibraryRepository LibraryRepository => _libraryRepository.Value;
 }

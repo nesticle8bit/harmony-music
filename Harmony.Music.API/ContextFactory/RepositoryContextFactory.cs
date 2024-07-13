@@ -14,7 +14,7 @@ public class RepositoryContextFactory : IDesignTimeDbContextFactory<RepositoryCo
             .Build();
 
         var builder = new DbContextOptionsBuilder<RepositoryContext>()
-            .UseNpgsql(configuration.GetConnectionString("OAuthPostgresql"), b => b.MigrationsAssembly("Harmony.Music.API"));
+            .UseNpgsql(configuration.GetConnectionString("Postgresql"), b => b.MigrationsAssembly("Harmony.Music.API"));
         return new RepositoryContext(builder.Options);
     }
 }

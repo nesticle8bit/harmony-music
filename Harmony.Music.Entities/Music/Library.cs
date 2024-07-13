@@ -8,7 +8,8 @@ public class Library
 {
     [MaxLength(45)]
     public string Id { get; set; } = RandomHelper.RandomString(45);
-    public DateTime DateCreated { get; set; }
+
+    public DateTime DateCreated { get; set; } = DateTime.UtcNow;
     
     public string? Path { get; set; }
     public bool HasBeenProcessed { get; set; } = false;

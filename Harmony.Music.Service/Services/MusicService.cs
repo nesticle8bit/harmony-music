@@ -1,7 +1,9 @@
 using AutoMapper;
 using Harmony.Music.Contracts.Manager;
+using Harmony.Music.Entities.Music;
 using Harmony.Music.ServiceContracts.Services;
 using Harmony.Music.Shared.DataTransferObjects;
+using Harmony.Music.Shared.DataTransferObjects.Music;
 
 namespace Harmony.Music.Service.Services;
 
@@ -50,7 +52,72 @@ public class MusicService : IMusicService
                 Title = tagLib.Tag.Title,
             }
         };
-        
+
         return metadata;
+    }
+
+    public LibrarySyncReportDto SyncLibrary()
+    {
+        LibrarySyncReportDto librarySyncReport = new();
+        List<string> allFiles = GetAllFiles("/mnt/Musica/Music/Comfy Synth", librarySyncReport.Errors);
+
+        Parallel.ForEach(allFiles, file =>
+        {
+            _repository.LibraryRepository.CreateLibrary(new Library()
+            {
+                Path = file
+            });
+
+            librarySyncReport.SongsImported++;
+        });
+
+        return librarySyncReport;
+    }
+
+    private List<string> GetAllFiles(string path, List<LibrarySyncErrorsDto> errors)
+    {
+        var musicFiles = new List<string>();
+        var dirs = new Queue<string>();
+        dirs.Enqueue(path);
+
+        string[] musicExtensions = { ".mp3", ".flac", ".wav", ".aac", ".ogg", ".wma", ".m4a" };
+
+        try
+        {
+            while (dirs.Count > 0)
+            {
+                string currentDir = dirs.Dequeue();
+                try
+                {
+                    foreach (string file in Directory.EnumerateFiles(currentDir))
+                    {
+                        if (musicExtensions.Contains(Path.GetExtension(file).ToLower()))
+                        {
+                            musicFiles.Add(file);
+                        }
+                    }
+
+                    foreach (string subDir in Directory.EnumerateDirectories(currentDir))
+                    {
+                        dirs.Enqueue(subDir);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Handle exceptions (e.g., access denied)
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            errors.Add(new LibrarySyncErrorsDto()
+            {
+                Error = e.Message,
+                StackTrace = e.StackTrace
+            });
+        }
+
+        return musicFiles;
     }
 }
