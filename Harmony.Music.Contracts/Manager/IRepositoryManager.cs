@@ -7,4 +7,6 @@ public interface IRepositoryManager
     ISongRepository SongRepository { get; }
 
     ILibraryRepository LibraryRepository { get; }
+    
+    void Save();
 }

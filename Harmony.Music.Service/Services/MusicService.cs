@@ -59,17 +59,11 @@ public class MusicService : IMusicService
     public LibrarySyncReportDto SyncLibrary()
     {
         LibrarySyncReportDto librarySyncReport = new();
-        List<string> allFiles = GetAllFiles("/mnt/Musica/Music/Comfy Synth", librarySyncReport.Errors);
+        List<string> allFiles = GetAllFiles("/mnt/Musica/Music", librarySyncReport.Errors);
 
-        Parallel.ForEach(allFiles, file =>
-        {
-            _repository.LibraryRepository.CreateLibrary(new Library()
-            {
-                Path = file
-            });
-
-            librarySyncReport.SongsImported++;
-        });
+        librarySyncReport.SongsFound = allFiles.Count;
+        librarySyncReport.SongsImported = _repository.LibraryRepository.SyncLibrary(allFiles);
+        _repository.Save();
 
         return librarySyncReport;
     }

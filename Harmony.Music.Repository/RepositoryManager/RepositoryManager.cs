@@ -21,4 +21,6 @@ public class RepositoryManager : IRepositoryManager
 
     public ISongRepository SongRepository => _songRepository.Value;
     public ILibraryRepository LibraryRepository => _libraryRepository.Value;
+    
+    public void Save() => _repositoryContext.SaveChanges();
 }

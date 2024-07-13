@@ -17,7 +17,15 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
 
     public void Create(T entity) => RepositoryContext.Set<T>().Add(entity);
 
+    public void CreateAsync(T entity) => RepositoryContext.Set<T>().AddAsync(entity);
+    
+    public void CreateRange(T entity) => RepositoryContext.Set<T>().AddRange(entity);
+
     public void Update(T entity) => RepositoryContext.Set<T>().Update(entity);
+    
+    public void UpdateRange(T entity) => RepositoryContext.Set<T>().UpdateRange(entity);
 
     public void Delete(T entity) => RepositoryContext.Set<T>().Remove(entity);
+    
+    public void DeleteRange(T entity) => RepositoryContext.Set<T>().RemoveRange(entity);
 }
