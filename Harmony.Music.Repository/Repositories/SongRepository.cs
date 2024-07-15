@@ -17,12 +17,22 @@ public class SongRepository : RepositoryBase<Song>, ISongRepository
 
         if (!string.IsNullOrEmpty(search?.Name))
             query = query.Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToLower().Trim() == search.Name.ToLower().Trim());
-        
+
         if (search.AlbumId.HasValue)
             query = query.Where(x => x.AlbumId == search.AlbumId.Value);
 
+        if (search.AudioBitrate.HasValue)
+            query = query.AsEnumerable()
+                .Where(x => x.MediaProperties != null && x.MediaProperties.AudioBitrate == search.AudioBitrate.Value)
+                .AsQueryable();
+
+        if (!string.IsNullOrEmpty(search.Path))
+            query = query.AsEnumerable()
+                .Where(x => x.MediaProperties != null && x.MediaProperties.Path == search.Path)
+                .AsQueryable();
+
         return query;
     }
-    
+
     public void CreateSong(Song song) => Create(song);
 }

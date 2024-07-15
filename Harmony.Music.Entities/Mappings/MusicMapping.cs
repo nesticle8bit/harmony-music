@@ -1,6 +1,10 @@
+using System.Text.Json;
 using Harmony.Music.Entities.Music;
+using Harmony.Music.Shared.DataTransferObjects;
+using Harmony.Music.Shared.DataTransferObjects.Music;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Harmony.Music.Entities.Mappings;
 
@@ -15,6 +19,13 @@ public class SongsMap : IEntityTypeConfiguration<Song>
         builder.HasOne(x => x.Album)
             .WithMany(x => x.Songs)
             .HasForeignKey(x => x.AlbumId);
+
+        builder.Property(x => x.MediaProperties)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => JsonSerializer.Deserialize<MediaPropertyDto>(v, (JsonSerializerOptions?)null)
+            );
     }
 }
 
@@ -25,6 +36,16 @@ public class AlbumsMap : IEntityTypeConfiguration<Album>
         builder.ToTable("albums", "music");
 
         builder.HasIndex(x => x.Id).IsUnique();
+
+        builder.Property(x => x.Genres)
+            .HasColumnType("jsonb");
+
+        builder.Property(x => x.Genres)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => JsonSerializer.Deserialize<List<GenreDto>>(v, (JsonSerializerOptions?)null)
+            );
     }
 }
 
