@@ -16,3 +16,4 @@ Harmony.Music.Shared/bin
 Harmony.Music.Shared/obj
 .idea
 Harmony.Music.API/wwwroot/*
+Harmony.Music.UI/.vscode/*

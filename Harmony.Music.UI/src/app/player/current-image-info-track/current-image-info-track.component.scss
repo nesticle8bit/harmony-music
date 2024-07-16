@@ -1,0 +1,21 @@
+.current-image-info-track {
+    max-width: 11.2rem;
+    position: absolute;
+    bottom: 4.75rem;
+    left: 0.5rem;
+    z-index: 1;
+}
+
+.bitrate {
+    position: absolute;
+    bottom: 5.3rem;
+    left: 1rem;
+    font-size: 0.6rem;
+    font-weight: 500;
+    width: max-content;
+    padding: 0.2rem 0.35rem;
+    background-color: #3a3a3c;
+    border-radius: 0.25rem;
+    text-transform: uppercase;
+    z-index: 2;
+}

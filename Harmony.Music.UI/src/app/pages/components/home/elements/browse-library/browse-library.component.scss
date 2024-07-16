@@ -1,0 +1,22 @@
+.browselist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.browseitem {
+    font-weight: 500;
+    padding: 1.25rem 1rem;
+    background-color: #1c1c1e;
+    color: rgba(255, 255, 255, 0.8705882353);
+    transition: background-color 0.2s ease-out;
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    place-items: center;
+    gap: 0.5rem;
+}
+
+.browseitem .icon {
+    height: 1.75rem;
+}

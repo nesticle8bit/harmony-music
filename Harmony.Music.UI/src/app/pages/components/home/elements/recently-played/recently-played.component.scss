@@ -1,0 +1,78 @@
+.recentitems {
+    gap: 1.5rem 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(10.75rem, 1fr));
+}
+
+.album-card {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 1rem;
+    height: max-content;
+    transition: background-color 0.2s ease-out;
+}
+
+.rhelp {
+    text-transform: uppercase;
+    font-size: 11px;
+    color: #bf5af2;
+    font-weight: 700;
+    margin: 0.25rem 0;
+}
+
+.rhelp.album {
+    color: #ff9f0a;
+}
+
+.album-card .title {
+    margin-bottom: 0.15rem;
+    font-size: 0.95rem;
+    width: fit-content;
+    position: relative;
+}
+
+.album-card h4 {
+    margin: 0;
+}
+
+.album-card .artist {
+    font-size: 0.8rem;
+    text-align: left;
+    opacity: 0.75;
+    font-weight: 700;
+}
+
+.album-card .versions {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+    margin-left: -0.25rem;
+}
+
+.play-btn {
+    aspect-ratio: 1;
+    padding: 0;
+    background: #055ee2;
+    display: grid;
+    place-items: center;
+}
+
+.album-card .play-btn {
+    // position: absolute;
+    // bottom: 1rem;
+    right: calc((100% - 4rem) / 2);
+    opacity: 0;
+    transform: translateY(1rem);
+    transition: all 0.25s;
+    width: 4rem;
+}
+
+.album-card:hover {
+    background-color: rgb(44, 44, 46);
+}
+
+.album-card .with-img:hover .play-btn {
+    transform: translateY(0);
+    opacity: 1;
+}
