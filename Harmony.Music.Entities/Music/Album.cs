@@ -8,6 +8,8 @@ namespace Harmony.Music.Entities.Music;
 
 public class Album : BaseEntity
 {
+    public string Hash { get; set; }
+    
     [MaxLength(50)]
     public string? Artwork { get; set; }
     
@@ -24,8 +26,9 @@ public class Album : BaseEntity
     public string? MusicBrainzDiscId { get; set; }
 
     [Column(TypeName = "jsonb")]
-    public List<GenreDto>? Genres { get; set; }
+    public List<string>? Genres { get; set; }
 
     public virtual ICollection<Song>? Songs { get; set; } = new HashSet<Song>();
     public virtual ICollection<ArtistAlbums>? ArtistAlbums { get; set; } = new HashSet<ArtistAlbums>();
+    public virtual ICollection<Library> Libraries { get; set; } = new List<Library>();
 }

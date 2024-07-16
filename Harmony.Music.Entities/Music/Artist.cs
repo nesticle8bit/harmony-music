@@ -6,12 +6,16 @@ namespace Harmony.Music.Entities.Music;
 
 public class Artist : BaseEntity
 {
+    public string Hash { get; set; }
+    
     [MaxLength(50)]
     public string? Image { get; set; }
     
     [MaxLength(400)]
     public string? Name { get; set; }
     public string? Bio { get; set; }
+    
+    [MaxLength(50)]
     public string? FoundedIn { get; set; }
 
     [Column(TypeName = "jsonb")]
@@ -21,4 +25,5 @@ public class Artist : BaseEntity
     public string? MetalArchivesUrl { get; set; }
 
     public virtual ICollection<ArtistAlbums> ArtistAlbums { get; set; } = new HashSet<ArtistAlbums>();
+    public virtual ICollection<Library> Libraries { get; set; } = new List<Library>();
 }

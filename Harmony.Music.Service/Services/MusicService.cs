@@ -5,7 +5,7 @@ using Harmony.Music.ServiceContracts.Services;
 using Harmony.Music.Shared.DataTransferObjects;
 using Harmony.Music.Shared.DataTransferObjects.Music;
 using Harmony.Music.Shared.Enums;
-using Microsoft.EntityFrameworkCore;
+using Harmony.Music.Shared.Helpers;
 
 namespace Harmony.Music.Service.Services;
 
@@ -32,10 +32,10 @@ public class MusicService : IMusicService
         return librarySyncReport;
     }
 
-    public ExtractMusicMetadataReportDto ExtractMusicMetadata()
+    public ExtractMusicMetadataReportDto ExtractMusicMetadatav2()
     {
         ExtractMusicMetadataReportDto report = new();
-        var files = _repository.LibraryRepository.SearchLibraries(null, false)?.ToList();
+        var files = _repository.LibraryRepository.SearchLibraries(null, false)?.Take(1000).ToList();
 
         if (files?.Count < 1)
             return report;
@@ -44,110 +44,29 @@ public class MusicService : IMusicService
         {
             try
             {
-                if (string.IsNullOrEmpty(file.Path))
-                    continue;
-
                 if (!File.Exists(file.Path))
                 {
-                    report.Errors.Add(new LibrarySyncErrorsDto()
-                    {
-                        Error = $"File does not exists and will be removed from the library",
-                        StackTrace = file.Path
-                    });
-
-                    _repository.LibraryRepository.DeleteLibrary(file.Id);
-                    _repository.Save();
-
-                    report.SongsRemoved++;
+                    MusicItemDoesNotExists(file, report);
                     continue;
                 }
 
-                var metadata = GetMediaMetadata(file.Path);
                 report.SongsProcessed++;
+                var metadata = GetMediaMetadata(file.Path);
 
-                if (metadata?.TrackProperties == null)
+                foreach (var artist in metadata.TrackProperties.Artists)
                 {
-                    report.Errors.Add(new LibrarySyncErrorsDto()
-                    {
-                        Error = $"Trackproperties metadata has not been found",
-                        StackTrace = file.Path
-                    });
-                    continue;
-                }
-
-                if (metadata.TrackProperties?.Artists == null)
-                    metadata.TrackProperties.Artists = new List<string>() { "Unknown" };
-
-                foreach (var artistValue in metadata.TrackProperties.Artists)
-                {
-                    var artistId = GetArtist(artistValue, true);
-
-                    if (!artistId.HasValue)
-                    {
-                        report.Errors.Add(new LibrarySyncErrorsDto()
-                        {
-                            Error = $"Artist has not been found {artistValue}",
-                            StackTrace = file.Path
-                        });
-                        continue;
-                    }
-
-                    var albumEntity = new Album()
+                    var artistId = GetOrCreateArtist(artist);
+                    var albumId = GetOrCreateAlbum(new Album()
                     {
                         Title = metadata.TrackProperties.Album,
                         Disc = (int)metadata.TrackProperties.Disc,
                         Year = (int)metadata.TrackProperties.Year,
                         Type = AlbumTypesEnum.Pending,
-                    };
-
-                    if (metadata.TrackProperties.Genres?.Count > 0)
-                        albumEntity.Genres = metadata.TrackProperties.Genres.Select(x => new GenreDto()
-                        {
-                            Name = x
-                        }).ToList();
-
-                    var albumId = GetAlbum(albumEntity, artistId, true);
-
-                    if (!albumId.HasValue)
-                    {
-                        report.Errors.Add(new LibrarySyncErrorsDto()
-                        {
-                            Error = $"Album has not been found {metadata.TrackProperties.Title}, artistId: {artistId}",
-                            StackTrace = file.Path
-                        });
-                        continue;
-                    }
-
-                    var fileInfo = new FileInfo(file.Path);
-                    metadata.MediaProperties.Length = fileInfo.Length;
-                    metadata.MediaProperties.Path = file.Path;
-
-                    var song = new Song()
-                    {
-                        AlbumId = albumId.Value,
-                        Track = (int)metadata.TrackProperties.Track,
-                        Name = !string.IsNullOrEmpty(metadata.TrackProperties.Title) ? metadata.TrackProperties.Title?.Trim() : fileInfo.Name,
-                        Description = metadata.Description,
-                        Mimetype = !string.IsNullOrEmpty(metadata.Mimetype) ? metadata.Mimetype : "unknown",
-                        PossiblyCorrupt = metadata.PossiblyCorrupt,
-                        Lyrics = metadata.TrackProperties.Lyrics,
-                        MediaProperties = metadata.MediaProperties
-                    };
-
-                    var songCreated = _repository.SongRepository
-                        .SearchSongs(new SearchSongDto()
-                        {
-                            Name = song.Name,
-                            AlbumId = song.AlbumId,
-                            Path = file.Path
-                        }, false)?.FirstOrDefault();
-
-                    if (songCreated != null)
-                        throw new Exception(
-                            $"The song '{song.Name}' ({metadata.MediaProperties?.Path}) has already been created. You can find it with the ID '{songCreated.Id}'.");
-
-                    _repository.SongRepository.CreateSong(song);
-                    _repository.Save();
+                        Genres = metadata.TrackProperties.Genres?.ToList()
+                    }, new Artist() { Id = artistId.Value, Name = artist});
+                    var songId = GetOrCreateSong(file.Path, albumId, metadata);
+                    
+                    SetProcessedLibraryRow(file, albumId, artistId);
                 }
 
                 report.SongsImported++;
@@ -165,42 +84,31 @@ public class MusicService : IMusicService
         return report;
     }
 
-    public long? GetArtist(string artist, bool createIfItDontExists = false)
+    public long? GetOrCreateArtist(string artist)
     {
         var entity = _repository.ArtistRepository.SearchArtist(new SearchArtistDto() { Name = artist }, false)?.FirstOrDefault();
 
         if (entity == null)
         {
-            if (!createIfItDontExists)
+            entity = new Artist()
             {
-                return null;
-            }
-            else
-            {
-                entity = new Artist()
-                {
-                    Name = artist
-                };
+                Name = artist,
+                Hash = HashHelper.CreateHash([artist])
+            };
 
-                _repository.ArtistRepository.CreateArtist(entity);
-                _repository.Save();
-
-                return entity.Id;
-            }
+            _repository.ArtistRepository.CreateArtist(entity);
+            _repository.Save();
         }
 
         return entity.Id;
     }
 
-    public long? GetAlbum(Album album, long? artistId, bool createIfItDontExists = false)
+    public long? GetOrCreateAlbum(Album album, Artist? artist)
     {
-        var entity = _repository.AlbumRepository.SearchAlbums(new SearchAlbumDto() { Title = album.Title, ArtistId = artistId }, false)?.FirstOrDefault();
+        var entity = _repository.AlbumRepository.SearchAlbums(new SearchAlbumDto() { Title = album.Title, ArtistId = artist.Id }, false)?.FirstOrDefault();
 
         if (entity == null)
         {
-            if (!createIfItDontExists)
-                return null;
-
             entity = new Album()
             {
                 Title = album.Title,
@@ -209,24 +117,55 @@ public class MusicService : IMusicService
                 Type = album.Type,
                 Genres = album.Genres,
                 ArtistAlbums = null,
-                Songs = null
+                Songs = null,
+                Hash = HashHelper.CreateHash([artist.Name, album.Title])
             };
 
             _repository.AlbumRepository.CreateAlbum(entity);
             _repository.Save();
 
-            var artistAlbums = _repository.ArtistAlbumsRepository.SearchArtistAlbums(new SearchArtistAlbumsDto() { AlbumId = entity.Id, ArtistId = artistId }, false)
+            var artistAlbums = _repository.ArtistAlbumsRepository.SearchArtistAlbums(new SearchArtistAlbumsDto() { AlbumId = entity.Id, ArtistId = artist.Id }, false)
                 ?.FirstOrDefault();
 
             if (artistAlbums != null) return entity.Id;
 
-            _repository.ArtistAlbumsRepository.CreateArtistAlbums(new ArtistAlbums() { AlbumId = entity.Id, ArtistId = artistId.Value });
+            _repository.ArtistAlbumsRepository.CreateArtistAlbums(new ArtistAlbums() { AlbumId = entity.Id, ArtistId = artist.Id });
             _repository.Save();
-
-            return entity.Id;
         }
 
         return entity.Id;
+    }
+
+    public long GetOrCreateSong(string filePath, long? albumId, MediaMetadataDto metadata)
+    {
+        var song = new Song()
+        {
+            AlbumId = albumId.Value,
+            Track = (int)metadata.TrackProperties.Track,
+            Name = !string.IsNullOrEmpty(metadata.TrackProperties.Title) ? metadata.TrackProperties.Title?.Trim() : "Unknown",
+            Description = metadata.Description,
+            Mimetype = !string.IsNullOrEmpty(metadata.Mimetype) ? metadata.Mimetype : "unknown",
+            PossiblyCorrupt = metadata.PossiblyCorrupt,
+            Lyrics = metadata.TrackProperties.Lyrics,
+            MediaProperties = metadata.MediaProperties,
+        };
+
+        var songCreated = _repository.SongRepository
+            .SearchSongs(new SearchSongDto()
+            {
+                Name = song.Name,
+                AlbumId = song.AlbumId,
+                Path = filePath
+            }, false)?.FirstOrDefault();
+
+        if (songCreated != null)
+            throw new Exception(
+                $"The song '{song.Name}' ({metadata.MediaProperties?.Path}) has already been created. You can find it with the ID '{songCreated.Id}'.");
+
+        _repository.SongRepository.CreateSong(song);
+        _repository.Save();
+
+        return song.Id;
     }
 
     public MediaMetadataDto? GetMediaMetadata(string file)
@@ -236,6 +175,7 @@ public class MusicService : IMusicService
 
         var tagLib = TagLib.File.Create(file);
 
+        var fileInfo = new FileInfo(file);
         var metadata = new MediaMetadataDto()
         {
             Name = tagLib.Name,
@@ -249,15 +189,16 @@ public class MusicService : IMusicService
                 AudioChannels = tagLib.Properties.AudioChannels,
                 AudioSampleRate = tagLib.Properties.AudioSampleRate,
                 BitsPerSample = tagLib.Properties.BitsPerSample,
-                Length = 0 // TODO: Length of the file
+                Path = file,
+                Length = fileInfo.Length
             },
             TrackProperties = new TrackPropertyDto()
             {
-                Artists = tagLib.Tag.Artists?.ToList(),
+                Artists = tagLib.Tag.Artists?.Length > 0 ? tagLib.Tag.Artists?.ToList() : new List<string>() { "Unknown" },
                 Album = tagLib.Tag.Album,
                 Disc = tagLib.Tag.Disc,
                 DiscCount = tagLib.Tag.DiscCount,
-                Genres = tagLib.Tag.Genres?.ToList(),
+                Genres = tagLib.Tag.Genres != null ? tagLib.Tag.Genres?.ToList() : new List<string>(),
                 Track = tagLib.Tag.Track,
                 TrackCount = tagLib.Tag.TrackCount,
                 Year = tagLib.Tag.Year,
@@ -270,13 +211,40 @@ public class MusicService : IMusicService
         return metadata;
     }
 
+    public bool SetProcessedLibraryRow(Library? library, long? albumId, long? artistId)
+    {
+        if (library is null)
+            return false;
+
+        library.HasBeenProcessed = true;
+        library.AlbumId = albumId;
+        library.ArtistId = artistId;
+        _repository.LibraryRepository.UpdateLibrary(library);
+
+        return true;
+    }
+
+    private void MusicItemDoesNotExists(Library? library, ExtractMusicMetadataReportDto report)
+    {
+        report.Errors.Add(new LibrarySyncErrorsDto()
+        {
+            Error = $"File does not exists and will be removed from the library",
+            StackTrace = library.Path
+        });
+
+        _repository.LibraryRepository.DeleteLibrary(library.Id);
+        _repository.Save();
+
+        report.SongsRemoved++;
+    }
+
     private List<string> GetAllFiles(string path, List<LibrarySyncErrorsDto> errors)
     {
         var musicFiles = new List<string>();
         var dirs = new Queue<string>();
         dirs.Enqueue(path);
 
-        string[] musicExtensions = { ".mp3", ".flac", ".wav", ".aac", ".ogg", ".wma", ".m4a" };
+        string[] musicExtensions = { ".mp3", ".flac", ".wav", ".aac", ".ogg", ".wma", ".m4a", ".opus" };
 
         try
         {

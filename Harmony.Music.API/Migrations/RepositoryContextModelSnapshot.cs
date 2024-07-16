@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using Harmony.Music.Repository;
-using Harmony.Music.Shared.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -42,8 +41,12 @@ namespace Harmony.Music.API.Migrations
                     b.Property<int>("Disc")
                         .HasColumnType("integer");
 
-                    b.Property<List<string>>("Genres")
+                    b.Property<string>("Genres")
                         .HasColumnType("jsonb");
+
+                    b.Property<string>("Hash")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("MusicBrainzDiscId")
                         .HasMaxLength(50)
@@ -82,6 +85,11 @@ namespace Harmony.Music.API.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FoundedIn")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Hash")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Image")
@@ -145,8 +153,14 @@ namespace Harmony.Music.API.Migrations
                     b.Property<bool>("AlbumColors")
                         .HasColumnType("boolean");
 
+                    b.Property<long?>("AlbumId")
+                        .HasColumnType("bigint");
+
                     b.Property<bool>("AlbumImages")
                         .HasColumnType("boolean");
+
+                    b.Property<long?>("ArtistId")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("ArtistImages")
                         .HasColumnType("boolean");
@@ -160,10 +174,11 @@ namespace Harmony.Music.API.Migrations
                     b.Property<string>("Path")
                         .HasColumnType("text");
 
-                    b.Property<bool>("ReadingFiles")
-                        .HasColumnType("boolean");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("AlbumId");
+
+                    b.HasIndex("ArtistId");
 
                     b.HasIndex("Id")
                         .IsUnique();
@@ -191,7 +206,7 @@ namespace Harmony.Music.API.Migrations
                     b.Property<string>("Lyrics")
                         .HasColumnType("text");
 
-                    b.Property<MediaPropertyDto>("MediaProperties")
+                    b.Property<string>("MediaProperties")
                         .HasColumnType("jsonb");
 
                     b.Property<string>("Mimetype")
@@ -236,6 +251,21 @@ namespace Harmony.Music.API.Migrations
                     b.Navigation("Artist");
                 });
 
+            modelBuilder.Entity("Harmony.Music.Entities.Music.Library", b =>
+                {
+                    b.HasOne("Harmony.Music.Entities.Music.Album", "Album")
+                        .WithMany("Libraries")
+                        .HasForeignKey("AlbumId");
+
+                    b.HasOne("Harmony.Music.Entities.Music.Artist", "Artist")
+                        .WithMany("Libraries")
+                        .HasForeignKey("ArtistId");
+
+                    b.Navigation("Album");
+
+                    b.Navigation("Artist");
+                });
+
             modelBuilder.Entity("Harmony.Music.Entities.Music.Song", b =>
                 {
                     b.HasOne("Harmony.Music.Entities.Music.Album", "Album")
@@ -251,12 +281,16 @@ namespace Harmony.Music.API.Migrations
                 {
                     b.Navigation("ArtistAlbums");
 
+                    b.Navigation("Libraries");
+
                     b.Navigation("Songs");
                 });
 
             modelBuilder.Entity("Harmony.Music.Entities.Music.Artist", b =>
                 {
                     b.Navigation("ArtistAlbums");
+
+                    b.Navigation("Libraries");
                 });
 #pragma warning restore 612, 618
         }

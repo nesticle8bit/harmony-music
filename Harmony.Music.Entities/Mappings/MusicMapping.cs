@@ -4,7 +4,6 @@ using Harmony.Music.Shared.DataTransferObjects;
 using Harmony.Music.Shared.DataTransferObjects.Music;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Harmony.Music.Entities.Mappings;
 
@@ -38,13 +37,10 @@ public class AlbumsMap : IEntityTypeConfiguration<Album>
         builder.HasIndex(x => x.Id).IsUnique();
 
         builder.Property(x => x.Genres)
-            .HasColumnType("jsonb");
-
-        builder.Property(x => x.Genres)
             .HasColumnType("jsonb")
             .HasConversion(
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                v => JsonSerializer.Deserialize<List<GenreDto>>(v, (JsonSerializerOptions?)null)
+                v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)
             );
     }
 }
