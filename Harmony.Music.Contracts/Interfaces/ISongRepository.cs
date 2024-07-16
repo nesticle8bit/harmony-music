@@ -5,7 +5,7 @@ namespace Harmony.Music.Contracts.Interfaces;
 
 public interface ISongRepository
 {
-    IQueryable<Song> SearchSongs(SearchSongDto search, bool trackChanges);
+    IQueryable<Song> SearchSongs(SearchSongDto? search, bool trackChanges);
     
     void CreateSong(Song song);
 }

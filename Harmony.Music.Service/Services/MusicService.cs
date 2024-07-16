@@ -84,6 +84,16 @@ public class MusicService : IMusicService
         return report;
     }
 
+    public string? GetFilePathBySongId(long? songId)
+    {
+        var song = _repository.SongRepository.SearchSongs(new SearchSongDto() { Id = songId }, false)?.FirstOrDefault();
+
+        if (song == null)
+            return string.Empty;
+
+        return song?.MediaProperties?.Path;
+    }
+    
     public long? GetOrCreateArtist(string artist)
     {
         var entity = _repository.ArtistRepository.SearchArtist(new SearchArtistDto() { Name = artist }, false)?.FirstOrDefault();

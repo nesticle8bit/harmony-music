@@ -7,4 +7,6 @@ public interface IMusicService
     LibrarySyncReportDto SyncLibrary();
 
     ExtractMusicMetadataReportDto ExtractMusicMetadatav2();
+
+    string GetFilePathBySongId(long? songId);
 }

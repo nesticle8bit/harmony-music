@@ -17,25 +17,21 @@ public class PlayerController : ControllerBase
     }
 
     [HttpGet("{songId}/play")]
-    public IActionResult PlaySong(string songId)
+    public IActionResult PlaySong(long? songId)
     {
-        JsonObjectResult<dynamic> result = new()
-        {
-            Status = (int)HttpStatusCode.OK
-        };
+        var songFilePath = _serviceManager.MusicService.GetFilePathBySongId(songId);
+        
+        if (string.IsNullOrEmpty(songFilePath))
+            return NotFound();
 
-        try
-        {
-            result.Data = songId;
-        }
-        catch (Exception e)
-        {
-            result.Errors?.Add(e.Message);
-            result.Status = (int)HttpStatusCode.InternalServerError;
+        return GetAudioFileStreamResult(songFilePath);
+    }
+    
+    private FileStreamResult GetAudioFileStreamResult(string filePath)
+    {
+        var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+        var contentType = "audio/mpeg"; // TODO: get the contentType of the current file
 
-            return StatusCode(result.Status, result);
-        }
-
-        return Ok(result);
+        return new FileStreamResult(fileStream, contentType);
     }
 }
