@@ -31,17 +31,19 @@ export class RecentlyAddedComponent implements OnInit {
   }
 
   playSong(id: string): void {
-    this.playerService.playSong(+id).subscribe(
-      (audioBlob: Blob) => {
-        debugger
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        audio.play();
-      },
-      (error) => {
-        console.error('Error playing song:', error);
-        // Handle error appropriately
-      }
-    );
+    this.playerService.playSong(+id);
+
+
+    // this.playerService.playSong(+id).subscribe((audioBlob: Blob) => {
+    //     debugger
+    //     const audioUrl = URL.createObjectURL(audioBlob);
+    //     const audio = new Audio(audioUrl);
+    //     audio.play();
+    //   },
+    //   (error) => {
+    //     console.error('Error playing song:', error);
+    //     // Handle error appropriately
+    //   }
+    // );
   }
 }
