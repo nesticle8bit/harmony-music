@@ -1,21 +1,40 @@
-import { Component, OnInit } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { IPlayerService } from '../../services/player.interface';
-import { Observable } from 'rxjs';
+import {
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  OnInit,
+  PLATFORM_ID,
+} from '@angular/core';
+import { FormsModule } from '@angular/forms';
 
 declare var Audio: any;
 
 @Component({
   selector: 'app-player-controls',
   standalone: true,
-  imports: [],
+  imports: [FormsModule, CommonModule],
   templateUrl: './player-controls.component.html',
   styleUrl: './player-controls.component.scss',
 })
 export class PlayerControlsComponent implements OnInit {
-  private audio: HTMLAudioElement | undefined = undefined;
+  private audio: HTMLAudioElement | undefined;
+  public isBrowser: boolean;
+  public currentTime: number = 0;
+  public duration: number = 0;
+  public isPlaying: boolean = false;
 
-  constructor(private playerService: IPlayerService) {
-    // this.audio = new Audio();
+  constructor(
+    private playerService: IPlayerService,
+    @Inject(PLATFORM_ID) private platformId: object,
+    private cdRef: ChangeDetectorRef
+  ) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+
+    if (this.isBrowser) {
+      this.audio = new Audio();
+    }
   }
 
   ngOnInit(): void {
@@ -23,31 +42,56 @@ export class PlayerControlsComponent implements OnInit {
   }
 
   getCurrentTrack(): void {
-    this.playerService
-      .currentTrack()
-      .subscribe((currentTrack: Observable<Blob> | undefined) => {
-        if (!currentTrack) {
-          return;
-        }
+    this.playerService.currentTrack().subscribe((currentTrack: Blob) => {
+      if (!currentTrack) {
+        return;
+      }
 
-        currentTrack.subscribe((blob: Blob) => {
-          const audioUrl = URL.createObjectURL(blob);
+      const audioUrl = URL.createObjectURL(currentTrack);
 
-          // Pause any currently playing audio
-          if (this.audio?.paused === false) {
-            this.audio.pause();
-            this.audio.currentTime = 0; // Reset to beginning
-          }
+      if (this.audio?.paused === false) {
+        this.audio.pause();
+        this.audio.currentTime = 0;
+      }
 
-          if (!this.audio) {
-            return;
-          }
+      if (!this.audio) {
+        return;
+      }
 
-          // Set new audio source and play
-          this.audio.src = audioUrl;
-          this.audio?.play();
-        });
+      this.audio.src = audioUrl;
+      this.audio?.play();
+
+      this.audio!.addEventListener('timeupdate', () => {
+        debugger;
+        this.currentTime = this.audio!.currentTime;
+        this.cdRef.detectChanges();
       });
+
+      this.audio!.addEventListener('durationchange', () => {
+        this.duration = this.audio!.duration;
+        this.cdRef.detectChanges();
+      });
+    });
+  }
+
+  pause(): void {
+    if (!this.audio) {
+      return;
+    }
+
+    if (this.audio.paused) {
+      this.audio.play();
+    } else {
+      this.audio.pause();
+    }
+  }
+
+  volume(control: any): void {
+    if (!this.audio) {
+      return;
+    }
+
+    this.audio.volume = control.value / 100;
   }
 
   // stopSong(): void {
@@ -56,4 +100,10 @@ export class PlayerControlsComponent implements OnInit {
   //     this.audio.currentTime = 0; // Reset to beginning
   //   }
   // }
+
+  seek(target: any): void {
+    if (this.audio) {
+      this.audio.currentTime = target.value;
+    }
+  }
 }

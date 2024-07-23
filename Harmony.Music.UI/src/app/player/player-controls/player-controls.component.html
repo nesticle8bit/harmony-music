@@ -19,15 +19,20 @@
         <div class="controls">
             <img class="pointer hide2" src="/images/player_icon1.png" alt="suffle">
             <img class="pointer hide2" src="/images/player_icon2.png" alt="backward">
-            <img class="pause pointer scale hide2" src="/images/player_icon3.png" alt="play">
+            <img class="pause pointer scale hide2" src="/images/player_icon3.png" alt="play" (click)="pause()">
             <img class="pointer hide2" src="/images/player_icon4.png" alt="forward">
             <img class="loop pointer hide2" src="/images/player_icon5.png" alt="loop">
         </div>
 
         <div class="progress-bar">
-            <span class="current-time hide2">0:00</span>
-            <input type="range" name="" class="play-bar pointer" min="0" max="100">
-            <span class="current-time total-time hide2">4:09</span>
+            <span class="current-time hide2">{{ currentTime | date:'mm:ss' }}</span>
+
+            <input type="range" class="play-bar pointer" min="0" max="100" [value]="currentTime" [max]="duration"
+                (input)="seek($event.target)" />
+
+            <span class="current-time total-time hide2">
+                {{duration | date:'mm:ss'}}
+            </span>
         </div>
     </div>
 
@@ -37,7 +42,9 @@
         <img src="/images/controls_icon3.png" alt="control3" class="control3 pointer cursor time">
         <img src="/images/controls_icon4.png" alt="control5" class="control4 pointer cursor time">
         <img src="/images/controls_icon5.png" alt="control5" class="control5 pointer cursor time">
-        <input type="range" name="" id="" class="volume pointer">
+
+        <input type="range" value="90" class="volume pointer" (change)="volume($event.target)">
+
         <img src="/images/album_icon2.png" alt="control6" class="control6 pointer">
         <div class="full-screen pointer">
             <i class="fa-solid fa-up-right-and-down-left-from-center"></i>

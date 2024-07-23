@@ -1,7 +1,7 @@
 import { environment } from '../../environments/environment';
 import { IPlayerService } from './player.interface';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Observable, Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -9,16 +9,22 @@ import { Injectable } from '@angular/core';
 })
 export class PlayerService implements IPlayerService {
   private subjects = {
-    currentTrack: new BehaviorSubject<Observable<Blob> | undefined>(undefined),
+    currentTrack: new Subject<Blob>(),
   };
 
   constructor(private http: HttpClient) {}
 
-  currentTrack(): Observable<Observable<Blob> | undefined> {
+  currentTrack(): Observable<Blob> {
     return this.subjects.currentTrack.asObservable();
   }
 
   playSong(id: number): void {
-    this.subjects.currentTrack.next(this.http.get(`${environment.apiUrl}/api/player/${id}/play`, { responseType: 'blob' }));
+    this.http
+      .get(`${environment.apiUrl}/api/player/${id}/play`, {
+        responseType: 'blob',
+      })
+      .subscribe((blob: Blob) => {
+        this.subjects.currentTrack.next(blob);
+      });
   }
 }
