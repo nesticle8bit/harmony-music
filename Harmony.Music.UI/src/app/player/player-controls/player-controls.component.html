@@ -25,7 +25,9 @@
         </div>
 
         <div class="progress-bar">
-            <span class="current-time hide2">{{currentTime | timeFormat}}</span>
+            <span class="current-time hide2">
+                {{currentTime | timeFormat}}
+            </span>
 
             <input type="range" class="play-bar pointer" min="0" max="100" [value]="currentTime" [max]="duration"
                 (input)="seek($event.target)" />
