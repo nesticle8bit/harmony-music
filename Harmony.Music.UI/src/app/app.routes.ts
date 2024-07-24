@@ -8,9 +8,10 @@ export const routes: Routes = [
     component: MainHomeComponent,
     canActivate: [],
   },
+
   {
-    path: 'settings',
-    component: SettingsComponent,
-    canActivate: [],
+    path: "pages",
+    loadChildren: () =>
+      import('./pages/pages.module').then((m) => m.PagesModule),
   },
 ];

@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Playlist } from '../../../../../models/playlist.model';
 import { IPlaylistService } from '../../../../../services/playlist.interface';
 import { IPlayerService } from '../../../../../services/player.interface';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-recently-added',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './recently-added.component.html',
   styleUrl: './recently-added.component.scss',
 })

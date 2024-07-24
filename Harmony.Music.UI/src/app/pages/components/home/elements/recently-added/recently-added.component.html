@@ -1,23 +1,23 @@
 @if(recentlyAdded.length > 0) {
-    <h2 class="card-heading">Recently Added</h2>
+<h2 class="card-heading">Recently Added</h2>
 
-    <div class="cards-container">
-        @for(playlist of recentlyAdded; track playlist.id) {
-            <div class="card pointer">
-                <div class="play" (click)="playSong(playlist.id)">
-                    <i class="fa-solid fa-play"></i>
-                </div>
+<div class="cards-container">
+    @for(playlist of recentlyAdded; track playlist.id) {
+    <div class="card pointer">
+        <div class="play" (click)="playSong(playlist.id)">
+            <i class="fa-solid fa-play"></i>
+        </div>
 
-                <img class="card-img" src="/images/card1img.jpeg" alt="card image" />
+        <img class="card-img" src="/images/card1img.jpeg" alt="card image" />
 
-                <p class="card-title">
-                    {{playlist.name}}
-                </p>
+        <p class="card-title">
+            {{playlist.name}}
+        </p>
 
-                <p class="card-info">
-                    {{playlist.artist.name}}
-                </p>
-            </div>
-        }
+        <p class="card-info" [routerLink]="['/pages/artist/' + playlist.artist.hash]">
+            {{playlist.artist.name}}
+        </p>
     </div>
+    }
+</div>
 }
