@@ -1,8 +1,9 @@
 import { environment } from '../../environments/environment';
 import { IPlayerService } from './player.interface';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject } from 'rxjs';
+import { catchError, map, Observable, Subject, throwError } from 'rxjs';
 import { Injectable } from '@angular/core';
+import { APIResponse } from '../models/response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -38,5 +39,17 @@ export class PlayerService implements IPlayerService {
             this.subjects.currentTrackBlob.next(blob);
           });
       });
+  }
+
+  getArtistInfo(artistHash: string): Observable<any> {
+    return this.http
+      .get<any>(`${environment.apiUrl}/api/artists/${artistHash}/info`)
+      .pipe(
+        map((response: APIResponse) => response.data),
+        catchError((error) => {
+          console.error('Error fetching users:', error);
+          return throwError(error);
+        })
+      );
   }
 }
