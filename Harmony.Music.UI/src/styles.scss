@@ -93,6 +93,10 @@ body {
   width: 355px;
   border-radius: 0.5rem;
   height: 88.3%;
+
+  &--left {
+    width: 255px;
+  }
 }
 
 .nav {
