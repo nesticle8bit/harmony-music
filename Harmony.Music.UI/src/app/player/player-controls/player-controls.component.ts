@@ -8,13 +8,14 @@ import {
   PLATFORM_ID,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { TimeFormatPipe } from '../../pipes/time-format.pipe';
 
 declare var Audio: any;
 
 @Component({
   selector: 'app-player-controls',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, TimeFormatPipe],
   templateUrl: './player-controls.component.html',
   styleUrl: './player-controls.component.scss',
 })
@@ -62,8 +63,7 @@ export class PlayerControlsComponent implements OnInit {
       this.audio?.play();
 
       this.audio!.addEventListener('timeupdate', () => {
-        debugger;
-        this.currentTime = this.audio!.currentTime;
+        this.currentTime = Math.floor(this.audio!.currentTime);
         this.cdRef.detectChanges();
       });
 

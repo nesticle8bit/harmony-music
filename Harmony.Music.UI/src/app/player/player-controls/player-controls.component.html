@@ -25,13 +25,13 @@
         </div>
 
         <div class="progress-bar">
-            <span class="current-time hide2">{{ currentTime | date:'mm:ss' }}</span>
+            <span class="current-time hide2">{{currentTime | timeFormat}}</span>
 
             <input type="range" class="play-bar pointer" min="0" max="100" [value]="currentTime" [max]="duration"
                 (input)="seek($event.target)" />
 
             <span class="current-time total-time hide2">
-                {{duration | date:'mm:ss'}}
+                {{duration | timeFormat}}
             </span>
         </div>
     </div>
