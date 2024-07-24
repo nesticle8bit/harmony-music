@@ -15,6 +15,13 @@ public class PlayerController : ControllerBase
     {
         _serviceManager = serviceManager;
     }
+    
+    [HttpGet("{songId}/info")]
+    public IActionResult SongInfo(long? songId)
+    {
+        var songInfo = _serviceManager.MusicService.GetSongInfo(songId);
+        return Ok(songInfo);
+    }
 
     [HttpGet("{songId}/play")]
     public IActionResult PlaySong(long? songId)

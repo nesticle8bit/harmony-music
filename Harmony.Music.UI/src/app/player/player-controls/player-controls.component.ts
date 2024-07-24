@@ -25,6 +25,7 @@ export class PlayerControlsComponent implements OnInit {
   public currentTime: number = 0;
   public duration: number = 0;
   public isPlaying: boolean = false;
+  public currentSong: any;
 
   constructor(
     private playerService: IPlayerService,
@@ -40,10 +41,20 @@ export class PlayerControlsComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCurrentTrack();
+    this.getCurrentTrackInfo();
+  }
+
+  getCurrentTrackInfo(): void {
+    // TODO: create model to avoid (any)
+    this.playerService.currentTrackInfo().subscribe((currentTrackInfo: any) => {
+      this.currentSong = currentTrackInfo;
+      console.log(this.currentSong);
+    });
   }
 
   getCurrentTrack(): void {
-    this.playerService.currentTrack().subscribe((currentTrack: Blob) => {
+    this.playerService.currentTrackBlob().subscribe((currentTrack: Blob) => {
+      debugger
       if (!currentTrack) {
         return;
       }

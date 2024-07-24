@@ -9,4 +9,6 @@ public interface IMusicService
     ExtractMusicMetadataReportDto ExtractMusicMetadatav2();
 
     string GetFilePathBySongId(long? songId);
+
+    SongInfoDto? GetSongInfo(long? songId);
 }

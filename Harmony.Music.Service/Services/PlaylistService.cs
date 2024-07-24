@@ -2,6 +2,7 @@ using AutoMapper;
 using Harmony.Music.Contracts.Manager;
 using Harmony.Music.ServiceContracts.Services;
 using Harmony.Music.Shared.DataTransferObjects.Library;
+using Harmony.Music.Shared.DataTransferObjects.Music;
 using Harmony.Music.Shared.DataTransferObjects.Playlists;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,12 +18,13 @@ public class PlaylistService : IPlaylistService
         _repository = repository;
         _mapper = mapper;
     }
-    
+
     public List<PlaylistDto> GetRecentlyAdded()
     {
         var recentlyAdded = _repository.SongRepository.SearchSongs(null, false)?
             .OrderByDescending(x => x.Id)
             .Include(x => x.Album)
+            .Include(x => x.Artist)
             .Take(10)
             .ToList();
 
@@ -36,10 +38,14 @@ public class PlaylistService : IPlaylistService
             Id = x.Id.ToString(),
             Name = x.Name,
             Image = $"{x.Album?.Hash}.jpg",
-            Description = "TODO",
+            Artist = new ArtistInfoDto
+            {
+                Hash = x.Artist?.Hash,
+                Name = x.Artist?.Name
+            },
             DateCreated = x.DateCreated
         }).ToList();
-        
+
         return playlists;
     }
 }

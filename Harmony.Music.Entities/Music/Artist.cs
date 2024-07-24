@@ -24,6 +24,6 @@ public class Artist : BaseEntity
     [MaxLength(150)]
     public string? MetalArchivesUrl { get; set; }
 
-    public virtual ICollection<ArtistAlbums> ArtistAlbums { get; set; } = new HashSet<ArtistAlbums>();
     public virtual ICollection<Library> Libraries { get; set; } = new List<Library>();
+    public virtual ICollection<Song>? Songs { get; set; } = new HashSet<Song>();
 }

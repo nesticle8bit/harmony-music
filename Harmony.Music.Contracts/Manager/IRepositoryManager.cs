@@ -12,7 +12,5 @@ public interface IRepositoryManager
 
     IAlbumRepository AlbumRepository { get; }
 
-    IArtistAlbumsRepository ArtistAlbumsRepository { get; }
-
     void Save();
 }

@@ -10,7 +10,6 @@ public class RepositoryContext : DbContext
 
     public DbSet<Album> Album { get; set; }
     public DbSet<Artist> Artist { get; set; }
-    public DbSet<ArtistAlbums> ArtistAlbums { get; set; }
     public DbSet<Library> Library { get; set; }
     public DbSet<Song> Song { get; set; }
     
@@ -19,7 +18,6 @@ public class RepositoryContext : DbContext
         modelBuilder.ApplyConfiguration(new SongsMap());
         modelBuilder.ApplyConfiguration(new AlbumsMap());
         modelBuilder.ApplyConfiguration(new ArtistsMap());
-        modelBuilder.ApplyConfiguration(new ArtistAlbumsMap());
         modelBuilder.ApplyConfiguration(new LibraryMap());
 
         base.OnModelCreating(modelBuilder);

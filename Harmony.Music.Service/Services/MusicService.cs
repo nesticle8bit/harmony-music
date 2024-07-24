@@ -6,6 +6,7 @@ using Harmony.Music.Shared.DataTransferObjects;
 using Harmony.Music.Shared.DataTransferObjects.Music;
 using Harmony.Music.Shared.Enums;
 using Harmony.Music.Shared.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Harmony.Music.Service.Services;
 
@@ -64,8 +65,8 @@ public class MusicService : IMusicService
                         Type = AlbumTypesEnum.Pending,
                         Genres = metadata.TrackProperties.Genres?.ToList()
                     }, new Artist() { Id = artistId.Value, Name = artist});
-                    var songId = GetOrCreateSong(file.Path, albumId, metadata);
                     
+                    var songId = GetOrCreateSong(file.Path, albumId, artistId, metadata);
                     SetProcessedLibraryRow(file, albumId, artistId);
                 }
 
@@ -92,6 +93,17 @@ public class MusicService : IMusicService
             return string.Empty;
 
         return song?.MediaProperties?.Path;
+    }
+
+    public SongInfoDto? GetSongInfo(long? songId)
+    {
+        var song = _repository.SongRepository.SearchSongs(new SearchSongDto() { Id = songId }, false)?
+            .Include(x => x.Album)
+            .Include(x => x.Artist)
+            .FirstOrDefault();
+
+        var mapped = _mapper.Map<SongInfoDto>(song); 
+        return mapped;
     }
     
     public long? GetOrCreateArtist(string artist)
@@ -126,31 +138,23 @@ public class MusicService : IMusicService
                 Year = album.Year,
                 Type = album.Type,
                 Genres = album.Genres,
-                ArtistAlbums = null,
                 Songs = null,
                 Hash = HashHelper.CreateHash([artist.Name, album.Title])
             };
 
             _repository.AlbumRepository.CreateAlbum(entity);
             _repository.Save();
-
-            var artistAlbums = _repository.ArtistAlbumsRepository.SearchArtistAlbums(new SearchArtistAlbumsDto() { AlbumId = entity.Id, ArtistId = artist.Id }, false)
-                ?.FirstOrDefault();
-
-            if (artistAlbums != null) return entity.Id;
-
-            _repository.ArtistAlbumsRepository.CreateArtistAlbums(new ArtistAlbums() { AlbumId = entity.Id, ArtistId = artist.Id });
-            _repository.Save();
         }
 
         return entity.Id;
     }
 
-    public long GetOrCreateSong(string filePath, long? albumId, MediaMetadataDto metadata)
+    public long GetOrCreateSong(string filePath, long? albumId, long? artistId, MediaMetadataDto metadata)
     {
         var song = new Song()
         {
             AlbumId = albumId.Value,
+            ArtistId = artistId.Value,
             Track = (int)metadata.TrackProperties.Track,
             Name = !string.IsNullOrEmpty(metadata.TrackProperties.Title) ? metadata.TrackProperties.Title?.Trim() : "Unknown",
             Description = metadata.Description,

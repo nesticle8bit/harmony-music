@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs';
 
 export abstract class IPlayerService {
-  abstract currentTrack(): Observable<Blob>;
+  abstract currentTrackBlob(): Observable<Blob>;
+  abstract currentTrackInfo(): Observable<any>;
   abstract playSong(id: number): void;
 }

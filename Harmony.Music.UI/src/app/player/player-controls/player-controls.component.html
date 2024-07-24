@@ -2,16 +2,20 @@
     <div class="album">
         <div class="album2">
             <img class="album-img pointer"
-                src="https://lastfm.freetls.fastly.net/i/u/770x0/5cbab58d7ead7aaddba35f9c793f3a69.jpg#5cbab58d7ead7aaddba35f9c793f3a69"
+                src="{{currentSong?.album?.artwork}}"
                 alt="album">
+
             <div class="description">
-                <p class="description1 pointer">The Rites of the Vampire Inscriptions</p>
-                <p class="description2 pointer cursor time hide2">Wampyric Rites</p>
+                <p class="description1 pointer">{{currentSong?.name}}</p>
+                <p class="description2 pointer cursor time hide2">
+                    {{currentSong?.artist?.name}}
+                </p>
             </div>
             <div class="plush pointer cursor time hide2">
                 <i class="fa-solid fa-plus plush-icon"></i>
             </div>
         </div>
+        
         <i class="fa-solid fa-play pause2 hide hide3"></i>
     </div>
 

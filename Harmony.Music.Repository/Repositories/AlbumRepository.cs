@@ -22,8 +22,8 @@ public class AlbumRepository : RepositoryBase<Album>, IAlbumRepository
         if (search.ArtistId.HasValue)
         {
             query = query
-                .Include(x => x.ArtistAlbums)
-                .Where(x => x.ArtistAlbums != null && x.ArtistAlbums.Any(aa => aa.ArtistId == search.ArtistId.Value));
+                .Include(x => x.Songs)
+                .Where(x => x.Songs != null && x.Songs.Any(aa => aa.ArtistId == search.ArtistId.Value));
         }
 
         return query;
