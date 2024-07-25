@@ -105,6 +105,17 @@ public class MusicService : IMusicService
         var mapped = _mapper.Map<SongInfoDto>(song); 
         return mapped;
     }
+
+    public ArtistPageInfoDto GetArtistInfo(string artistHash)
+    {
+        var artist = _repository.ArtistRepository.SearchArtist(new SearchArtistDto() { Hash = artistHash }, false)
+            .Include(x => x.Songs)
+                .ThenInclude(x => x.Album)
+            .FirstOrDefault();
+
+        var mapped = _mapper.Map<ArtistPageInfoDto>(artist);
+        return mapped;
+    }
     
     public long? GetOrCreateArtist(string artist)
     {

@@ -11,4 +11,6 @@ public interface IMusicService
     string GetFilePathBySongId(long? songId);
 
     SongInfoDto? GetSongInfo(long? songId);
+
+    ArtistPageInfoDto GetArtistInfo(string artistHash);
 }

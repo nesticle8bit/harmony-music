@@ -1,16 +1,18 @@
 import { Component } from '@angular/core';
 import { IPlayerService } from '../../../../services/player.interface';
 import { ActivatedRoute } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-artist-page',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './artist-page.component.html',
   styleUrl: './artist-page.component.scss',
 })
 export class ArtistPageComponent {
   public artistHash: string = '';
+  public artist: any;
 
   constructor(
     private playerService: IPlayerService,
@@ -30,7 +32,7 @@ export class ArtistPageComponent {
     this.playerService
       .getArtistInfo(this.artistHash)
       .subscribe((response: any) => {
-        console.log(response);
+        this.artist = response;
       });
   }
 }

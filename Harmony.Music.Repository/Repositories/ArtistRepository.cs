@@ -18,6 +18,9 @@ public class ArtistRepository : RepositoryBase<Artist>, IArtistRepository
         if (!string.IsNullOrEmpty(search?.Name))
             query = query.Where(x => !string.IsNullOrEmpty(x.Name) && x.Name.ToLower().Trim() == search.Name.ToLower().Trim());
 
+        if (!string.IsNullOrEmpty(search?.Hash))
+            query = query.Where(x => !string.IsNullOrEmpty(x.Hash) && x.Hash.Equals(search.Hash.Trim()));
+
         return query;
     }
 
