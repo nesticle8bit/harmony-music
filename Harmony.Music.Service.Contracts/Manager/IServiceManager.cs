@@ -6,4 +6,5 @@ public interface IServiceManager
 {
     IMusicService MusicService { get; }
     IPlaylistService PlaylistService { get; }
+    ILastfmService LastfmService { get; }
 }

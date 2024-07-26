@@ -106,6 +106,14 @@ public class MusicService : IMusicService
         return mapped;
     }
 
+    public ArtistInfoDto GetArtist(string artistHash)
+    {
+        var artist = _repository.ArtistRepository.SearchArtist(new SearchArtistDto() { Hash = artistHash }, false).FirstOrDefault();
+        var mapped = _mapper.Map<ArtistInfoDto>(artist);
+        
+        return mapped;
+    }
+
     public ArtistPageInfoDto GetArtistInfo(string artistHash)
     {
         var artist = _repository.ArtistRepository.SearchArtist(new SearchArtistDto() { Hash = artistHash }, false)

@@ -25,7 +25,7 @@ public class PlaylistService : IPlaylistService
             .OrderByDescending(x => x.Id)
             .Include(x => x.Album)
             .Include(x => x.Artist)
-            .Take(10)
+            .Take(12)
             .ToList();
 
         var playlists = new List<PlaylistDto>();

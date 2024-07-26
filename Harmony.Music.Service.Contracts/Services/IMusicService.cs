@@ -12,5 +12,7 @@ public interface IMusicService
 
     SongInfoDto? GetSongInfo(long? songId);
 
+    ArtistInfoDto GetArtist(string artistHash);
+    
     ArtistPageInfoDto GetArtistInfo(string artistHash);
 }

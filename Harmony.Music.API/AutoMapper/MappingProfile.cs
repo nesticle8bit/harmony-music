@@ -12,6 +12,7 @@ public class MappingProfile : Profile
         CreateMap<Album, AlbumInfoDto>();
         CreateMap<Song, SongInfoDto>();
         CreateMap<Artist, ArtistPageInfoDto>()
-            .ForMember(x => x.Albums, opt => opt.MapFrom(m => m.Songs.Select(x => x.Album)));
+            .ForMember(x => x.Albums, opt => opt.MapFrom(m => m.Songs.Select(x => x.Album)))
+            .ForMember(x => x.Songs, opt => opt.MapFrom(m => m.Songs.Count));
     }
 }

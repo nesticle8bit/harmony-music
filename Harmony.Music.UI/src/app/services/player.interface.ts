@@ -5,4 +5,5 @@ export abstract class IPlayerService {
   abstract currentTrackInfo(): Observable<any>;
   abstract playSong(id: number): void;
   abstract getArtistInfo(artistHash: string): Observable<any>;
+  abstract getTopSongs(artistHash: string): Observable<any>;
 }

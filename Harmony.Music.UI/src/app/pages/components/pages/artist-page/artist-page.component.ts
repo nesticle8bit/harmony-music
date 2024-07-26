@@ -13,6 +13,7 @@ import { CommonModule } from '@angular/common';
 export class ArtistPageComponent {
   public artistHash: string = '';
   public artist: any;
+  public topSongs: any[] = [];
 
   constructor(
     private playerService: IPlayerService,
@@ -21,6 +22,7 @@ export class ArtistPageComponent {
     this.activatedRoute.paramMap.subscribe((paramMap: any) => {
       this.artistHash = paramMap.params.hash;
       this.getArtistInfo();
+      this.getTopSongs();
     });
   }
 
@@ -33,6 +35,18 @@ export class ArtistPageComponent {
       .getArtistInfo(this.artistHash)
       .subscribe((response: any) => {
         this.artist = response;
+      });
+  }
+
+  getTopSongs(): void {
+    if (!this.artistHash) {
+      return;
+    }
+    
+    this.playerService
+      .getTopSongs(this.artistHash)
+      .subscribe((response: any) => {
+        this.topSongs = response;
       });
   }
 }

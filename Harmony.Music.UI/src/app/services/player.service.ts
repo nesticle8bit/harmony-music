@@ -52,4 +52,16 @@ export class PlayerService implements IPlayerService {
         })
       );
   }
+
+  getTopSongs(artistHash: string): Observable<any> {
+    return this.http
+      .get<any>(`${environment.apiUrl}/api/songs/${artistHash}/top`)
+      .pipe(
+        map((response: APIResponse) => response.data),
+        catchError((error) => {
+          console.error('Error fetching users:', error);
+          return throwError(error);
+        })
+      );
+  }
 }
