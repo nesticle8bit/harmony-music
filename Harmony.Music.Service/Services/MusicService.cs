@@ -33,7 +33,7 @@ public class MusicService : IMusicService
         return librarySyncReport;
     }
 
-    public ExtractMusicMetadataReportDto ExtractMusicMetadatav2()
+    public ExtractMusicMetadataReportDto ExtractMusicMetadata()
     {
         ExtractMusicMetadataReportDto report = new();
         var files = _repository.LibraryRepository.SearchLibraries(null, false)?.Take(1000).ToList();

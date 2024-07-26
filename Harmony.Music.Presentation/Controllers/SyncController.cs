@@ -46,7 +46,7 @@ public class SyncController : ControllerBase
 
         try
         {
-            result.Data = _serviceManager.MusicService.ExtractMusicMetadatav2();
+            result.Data = _serviceManager.MusicService.ExtractMusicMetadata();
         }
         catch (Exception e)
         {
