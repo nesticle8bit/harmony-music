@@ -80,7 +80,7 @@ public class MusicService : IMusicService
                         AlbumId = albumId,
                         Metadata = metadata,
                         Artist = new ArtistInfoDto { Name = artist },
-                        Album = new AlbumInfoDto { Title = metadata.TrackProperties.Album },
+                        Album = new AlbumInfoDto { Title = metadata.TrackProperties.Album ?? "Unknown" },
                         LibraryId = file.Id
                     });
 
@@ -253,7 +253,7 @@ public class MusicService : IMusicService
     public long GetOrCreateSong(CreateSongDto createSongDto)
     {
         string songName = !string.IsNullOrEmpty(createSongDto.Metadata?.TrackProperties?.Title) ? createSongDto.Metadata.TrackProperties.Title?.Trim() : "Unknown";
-        string hashName = HashHelper.CreateHash([createSongDto.Artist.Name, createSongDto.Album.Title, songName]);
+        string hashName = HashHelper.CreateHash([createSongDto.Artist.Name, createSongDto.Album?.Title, songName]);
 
         var entity = _repository.SongRepository.SearchSongs(new SearchSongDto
         {
