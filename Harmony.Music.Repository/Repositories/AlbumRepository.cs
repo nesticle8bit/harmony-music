@@ -16,22 +16,26 @@ public class AlbumRepository : RepositoryBase<Album>, IAlbumRepository
     {
         var query = FindAll(trackChanges);
 
-        if (!string.IsNullOrEmpty(search?.Title))
-            query = query.Where(x => !string.IsNullOrEmpty(x.Title) && x.Title.ToLower().Trim() == search.Title.ToLower().Trim());
-
-        if (search.ArtistId.HasValue)
+        if (search != null)
         {
-            query = query
-                .Include(x => x.Songs)
-                .Where(x => x.Songs != null && x.Artists != null && x.Artists.Contains(search.ArtistId.Value));
-        }
+            if (!string.IsNullOrEmpty(search?.Title))
+                query = query.Where(x => x.Title != null && x.Title.ToLower().Trim() == search.Title.ToLower().Trim());
 
-        if (search.HasArtwork.HasValue)
-        {
-            if (search.HasArtwork.Value)
-                query = query.Where(x => x.Artwork != null);
-            else
-                query = query.Where(x => x.Artwork == null);
+            if (search != null && search.ArtistId.HasValue)
+            {
+                query = query
+                    .AsEnumerable()
+                    .Where(x => x.Artists != null && x.Artists.Contains(search.ArtistId.Value))
+                    .AsQueryable();
+            }
+
+            if (search != null && search.HasArtwork.HasValue)
+            {
+                if (search.HasArtwork.Value)
+                    query = query.Where(x => x.Artwork != null);
+                else
+                    query = query.Where(x => x.Artwork == null);
+            }
         }
 
         return query;
