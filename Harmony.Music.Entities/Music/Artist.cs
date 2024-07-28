@@ -22,6 +22,4 @@ public class Artist : BaseEntity
     public List<string>? Tags { get; set; }
     
     // TODO: Social network profiles list
-
-    public virtual ICollection<Song>? Songs { get; set; } = new HashSet<Song>();
 }
