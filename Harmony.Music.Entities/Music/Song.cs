@@ -9,9 +9,10 @@ public class Song : BaseEntity
 {
     [MaxLength(45)]
     public string? LibraryId { get; set; }
-    
     public long? AlbumId { get; set; }
-    public virtual Album? Album { get; set; }
+    
+    [Column(TypeName = "jsonb")]
+    public List<long>? Artists { get; set; }
 
     public int Track { get; set; }
     
@@ -29,4 +30,6 @@ public class Song : BaseEntity
 
     [Column(TypeName = "jsonb")]
     public MediaPropertyDto? MediaProperties { get; set; }
+    
+    public virtual Album? Album { get; set; }
 }

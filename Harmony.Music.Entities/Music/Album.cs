@@ -25,9 +25,6 @@ public class Album : BaseEntity
     
     public int Year { get; set; }
 
-    [MaxLength(50)]
-    public string? MusicBrainzDiscId { get; set; }
-
     [Column(TypeName = "jsonb")]
     public List<string>? Genres { get; set; }
 

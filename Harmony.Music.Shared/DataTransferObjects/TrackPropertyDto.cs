@@ -14,6 +14,5 @@ public class TrackPropertyDto
     public uint Disc { get; set; }
     public uint DiscCount { get; set; }
 
-    public string? MusicBrainzDiscId { get; set; }
     public string? Lyrics { get; set; }
 }

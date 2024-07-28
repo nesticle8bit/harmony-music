@@ -48,30 +48,30 @@ public class MusicService : IMusicService
         {
             try
             {
-                 if (!File.Exists(file.Path))
-                 {
-                     MusicItemDoesNotExists(file, report);
-                     continue;
-                 }
-                
-                 report.SongsProcessed++;
+                if (!File.Exists(file.Path))
+                {
+                    MusicItemDoesNotExists(file, report);
+                    continue;
+                }
+
+                report.SongsProcessed++;
                 var metadata = GetMediaMetadata(file.Path);
-                
-                 foreach (var artist in metadata.TrackProperties.Artists)
-                 {
-                     var artistId = GetOrCreateArtist(artist);
-                     var albumId = GetOrCreateAlbum(new Album()
-                     {
-                         Title = metadata.TrackProperties.Album,
-                         Disc = (int)metadata.TrackProperties.Disc,
-                         Year = (int)metadata.TrackProperties.Year,
-                         Type = AlbumTypesEnum.Pending,
-                         Genres = metadata.TrackProperties.Genres?.ToList()
-                     }, new Artist() { Id = artistId.Value, Name = artist});
-                     
-                     GetOrCreateSong(file.Path, albumId, artistId, metadata);
-                     SetProcessedLibraryRow(file, albumId, artistId);
-                 }
+
+                foreach (var artist in metadata.TrackProperties.Artists)
+                {
+                    var artistId = GetOrCreateArtist(artist);
+                    var albumId = GetOrCreateAlbum(new Album()
+                    {
+                        Title = metadata.TrackProperties.Album,
+                        Disc = (int)metadata.TrackProperties.Disc,
+                        Year = (int)metadata.TrackProperties.Year,
+                        Type = AlbumTypesEnum.Pending,
+                        Genres = metadata.TrackProperties.Genres?.ToList()
+                    }, new Artist() { Id = artistId.Value, Name = artist });
+
+                    GetOrCreateSong(file.Path, albumId, artistId, metadata);
+                    SetProcessedLibraryRow(file, albumId, artistId);
+                }
 
                 report.SongsImported++;
             }
@@ -103,10 +103,10 @@ public class MusicService : IMusicService
         {
             // ExtractAlbumArt(metadata, "06225f58c6");
         }
-        
+
         return processed;
     }
-    
+
     public void ExtractAlbumArt(MediaMetadataDto metadata, string albumHash)
     {
         var directory = Path.GetDirectoryName(metadata.Name);
@@ -116,9 +116,9 @@ public class MusicService : IMusicService
         string albumart = "";
         foreach (var file in Directory.EnumerateFiles(directory))
         {
-            if(!string.IsNullOrEmpty(albumart))
+            if (!string.IsNullOrEmpty(albumart))
                 break;
-            
+
             if (extensions.Contains(Path.GetExtension(file).ToLower()) && fileNames.Contains(Path.GetFileNameWithoutExtension(file).ToLower()))
             {
                 albumart = file;
@@ -132,8 +132,8 @@ public class MusicService : IMusicService
 
         if (!Directory.Exists(imageFolder))
             Directory.CreateDirectory(imageFolder);
-        
-        File.Copy(albumart, Path.Combine(imageFolder, $"{albumHash}{Path.GetExtension(albumart)}"), true); 
+
+        File.Copy(albumart, Path.Combine(imageFolder, $"{albumHash}{Path.GetExtension(albumart)}"), true);
     }
 
     public string? GetFilePathBySongId(long? songId)
@@ -152,7 +152,7 @@ public class MusicService : IMusicService
             .Include(x => x.Album)
             .FirstOrDefault();
 
-        var mapped = _mapper.Map<SongInfoDto>(song); 
+        var mapped = _mapper.Map<SongInfoDto>(song);
         return mapped;
     }
 
@@ -160,7 +160,7 @@ public class MusicService : IMusicService
     {
         var artist = _repository.ArtistRepository.SearchArtist(new SearchArtistDto() { Hash = artistHash }, false).FirstOrDefault();
         var mapped = _mapper.Map<ArtistInfoDto>(artist);
-        
+
         return mapped;
     }
 
@@ -168,7 +168,7 @@ public class MusicService : IMusicService
     {
         var artist = _repository.ArtistRepository.SearchArtist(new SearchArtistDto() { Hash = artistHash }, false)
             .Include(x => x.Songs)
-                .ThenInclude(x => x.Album)
+            .ThenInclude(x => x.Album)
             .FirstOrDefault();
 
         var mapped = _mapper.Map<ArtistPageInfoDto>(artist);
@@ -177,10 +177,10 @@ public class MusicService : IMusicService
             .Select(x => x.Key)
             .OrderBy(x => x.Year)
             .ToList();
-        
+
         return mapped;
     }
-    
+
     public long? GetOrCreateArtist(string artist)
     {
         var entity = _repository.ArtistRepository.SearchArtist(new SearchArtistDto() { Name = artist }, false)?.FirstOrDefault();
@@ -291,7 +291,6 @@ public class MusicService : IMusicService
                 Track = tagLib.Tag.Track,
                 TrackCount = tagLib.Tag.TrackCount,
                 Year = tagLib.Tag.Year,
-                MusicBrainzDiscId = tagLib.Tag.MusicBrainzDiscId,
                 Lyrics = tagLib.Tag.Lyrics,
                 Title = tagLib.Tag.Title,
             }
