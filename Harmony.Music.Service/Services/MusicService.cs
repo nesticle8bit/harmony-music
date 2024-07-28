@@ -36,7 +36,10 @@ public class MusicService : IMusicService
     public ExtractMusicMetadataReportDto ExtractMusicMetadata()
     {
         ExtractMusicMetadataReportDto report = new();
-        var files = _repository.LibraryRepository.SearchLibraries(null, false)?.Take(1000).ToList();
+        var files = _repository.LibraryRepository.SearchLibraries(null, false)?
+            .OrderBy(x => x.Path)
+            .Take(239)
+            .ToList();
 
         if (files?.Count < 1)
             return report;
@@ -45,30 +48,30 @@ public class MusicService : IMusicService
         {
             try
             {
-                if (!File.Exists(file.Path))
-                {
-                    MusicItemDoesNotExists(file, report);
-                    continue;
-                }
-
-                report.SongsProcessed++;
+                 if (!File.Exists(file.Path))
+                 {
+                     MusicItemDoesNotExists(file, report);
+                     continue;
+                 }
+                
+                 report.SongsProcessed++;
                 var metadata = GetMediaMetadata(file.Path);
-
-                foreach (var artist in metadata.TrackProperties.Artists)
-                {
-                    var artistId = GetOrCreateArtist(artist);
-                    var albumId = GetOrCreateAlbum(new Album()
-                    {
-                        Title = metadata.TrackProperties.Album,
-                        Disc = (int)metadata.TrackProperties.Disc,
-                        Year = (int)metadata.TrackProperties.Year,
-                        Type = AlbumTypesEnum.Pending,
-                        Genres = metadata.TrackProperties.Genres?.ToList()
-                    }, new Artist() { Id = artistId.Value, Name = artist});
-                    
-                    var songId = GetOrCreateSong(file.Path, albumId, artistId, metadata);
-                    SetProcessedLibraryRow(file, albumId, artistId);
-                }
+                
+                 foreach (var artist in metadata.TrackProperties.Artists)
+                 {
+                     var artistId = GetOrCreateArtist(artist);
+                     var albumId = GetOrCreateAlbum(new Album()
+                     {
+                         Title = metadata.TrackProperties.Album,
+                         Disc = (int)metadata.TrackProperties.Disc,
+                         Year = (int)metadata.TrackProperties.Year,
+                         Type = AlbumTypesEnum.Pending,
+                         Genres = metadata.TrackProperties.Genres?.ToList()
+                     }, new Artist() { Id = artistId.Value, Name = artist});
+                     
+                     GetOrCreateSong(file.Path, albumId, artistId, metadata);
+                     SetProcessedLibraryRow(file, albumId, artistId);
+                 }
 
                 report.SongsImported++;
             }
@@ -85,6 +88,54 @@ public class MusicService : IMusicService
         return report;
     }
 
+    public int ExtractAlbumsArtwork()
+    {
+        var albumsWithoutArtwork = _repository.AlbumRepository.SearchAlbums(new SearchAlbumDto() { HasArtwork = false }, false)
+            .Take(1000)
+            .ToList();
+
+        if (albumsWithoutArtwork?.Count < 1)
+            return 0;
+
+        var processed = 0;
+
+        foreach (var album in albumsWithoutArtwork)
+        {
+            // ExtractAlbumArt(metadata, "06225f58c6");
+        }
+        
+        return processed;
+    }
+    
+    public void ExtractAlbumArt(MediaMetadataDto metadata, string albumHash)
+    {
+        var directory = Path.GetDirectoryName(metadata.Name);
+        string[] extensions = [".jpg", ".jpeg", ".png", ".bmp"];
+        string[] fileNames = ["cover", "albumart", "folder"];
+
+        string albumart = "";
+        foreach (var file in Directory.EnumerateFiles(directory))
+        {
+            if(!string.IsNullOrEmpty(albumart))
+                break;
+            
+            if (extensions.Contains(Path.GetExtension(file).ToLower()) && fileNames.Contains(Path.GetFileNameWithoutExtension(file).ToLower()))
+            {
+                albumart = file;
+            }
+        }
+
+        if (string.IsNullOrEmpty(albumart))
+            return;
+
+        var imageFolder = Path.Combine("./", "wwwroot", "albums", albumHash);
+
+        if (!Directory.Exists(imageFolder))
+            Directory.CreateDirectory(imageFolder);
+        
+        File.Copy(albumart, Path.Combine(imageFolder, $"{albumHash}{Path.GetExtension(albumart)}"), true); 
+    }
+
     public string? GetFilePathBySongId(long? songId)
     {
         var song = _repository.SongRepository.SearchSongs(new SearchSongDto() { Id = songId }, false)?.FirstOrDefault();
@@ -99,7 +150,6 @@ public class MusicService : IMusicService
     {
         var song = _repository.SongRepository.SearchSongs(new SearchSongDto() { Id = songId }, false)?
             .Include(x => x.Album)
-            .Include(x => x.Artist)
             .FirstOrDefault();
 
         var mapped = _mapper.Map<SongInfoDto>(song); 
@@ -122,6 +172,12 @@ public class MusicService : IMusicService
             .FirstOrDefault();
 
         var mapped = _mapper.Map<ArtistPageInfoDto>(artist);
+        mapped.Albums = mapped.Albums?
+            .GroupBy(x => new AlbumInfoDto { Hash = x.Hash, Artwork = x.Artwork, Title = x.Title, Year = x.Year })
+            .Select(x => x.Key)
+            .OrderBy(x => x.Year)
+            .ToList();
+        
         return mapped;
     }
     
@@ -173,7 +229,7 @@ public class MusicService : IMusicService
         var song = new Song()
         {
             AlbumId = albumId.Value,
-            ArtistId = artistId.Value,
+            LibraryId = "", // TODO: Send libraryId as parameter
             Track = (int)metadata.TrackProperties.Track,
             Name = !string.IsNullOrEmpty(metadata.TrackProperties.Title) ? metadata.TrackProperties.Title?.Trim() : "Unknown",
             Description = metadata.Description,
@@ -250,8 +306,6 @@ public class MusicService : IMusicService
             return false;
 
         library.HasBeenProcessed = true;
-        library.AlbumId = albumId;
-        library.ArtistId = artistId;
         _repository.LibraryRepository.UpdateLibrary(library);
 
         return true;
