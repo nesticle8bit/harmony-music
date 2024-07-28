@@ -7,8 +7,11 @@ namespace Harmony.Music.Entities.Music;
 
 public class Song : BaseEntity
 {
-    public long? ArtistId { get; set; }
+    [MaxLength(45)]
+    public string? LibraryId { get; set; }
+    
     public long? AlbumId { get; set; }
+    public virtual Album? Album { get; set; }
 
     public int Track { get; set; }
     
@@ -26,7 +29,4 @@ public class Song : BaseEntity
 
     [Column(TypeName = "jsonb")]
     public MediaPropertyDto? MediaProperties { get; set; }
-
-    public virtual Artist? Artist { get; set; }
-    public virtual Album? Album { get; set; }
 }

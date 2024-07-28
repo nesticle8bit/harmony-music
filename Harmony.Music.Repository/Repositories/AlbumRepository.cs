@@ -23,7 +23,15 @@ public class AlbumRepository : RepositoryBase<Album>, IAlbumRepository
         {
             query = query
                 .Include(x => x.Songs)
-                .Where(x => x.Songs != null && x.Songs.Any(aa => aa.ArtistId == search.ArtistId.Value));
+                .Where(x => x.Songs != null && x.Artists != null && x.Artists.Contains(search.ArtistId.Value));
+        }
+
+        if (search.HasArtwork.HasValue)
+        {
+            if (search.HasArtwork.Value)
+                query = query.Where(x => x.Artwork != null);
+            else
+                query = query.Where(x => x.Artwork == null);
         }
 
         return query;

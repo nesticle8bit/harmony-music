@@ -8,6 +8,8 @@ public interface IMusicService
 
     ExtractMusicMetadataReportDto ExtractMusicMetadata();
 
+    int ExtractAlbumsArtwork();
+
     string GetFilePathBySongId(long? songId);
 
     SongInfoDto? GetSongInfo(long? songId);

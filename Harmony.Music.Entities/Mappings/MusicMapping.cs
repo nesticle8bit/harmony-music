@@ -18,10 +18,6 @@ public class SongsMap : IEntityTypeConfiguration<Song>
         builder.HasOne(x => x.Album)
             .WithMany(x => x.Songs)
             .HasForeignKey(x => x.AlbumId);
-        
-        builder.HasOne(x => x.Artist)
-            .WithMany(x => x.Songs)
-            .HasForeignKey(x => x.ArtistId);
 
         builder.Property(x => x.MediaProperties)
             .HasColumnType("jsonb")

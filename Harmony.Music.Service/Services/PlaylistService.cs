@@ -24,7 +24,6 @@ public class PlaylistService : IPlaylistService
         var recentlyAdded = _repository.SongRepository.SearchSongs(null, false)?
             .OrderByDescending(x => x.Id)
             .Include(x => x.Album)
-            .Include(x => x.Artist)
             .Take(12)
             .ToList();
 
@@ -38,11 +37,11 @@ public class PlaylistService : IPlaylistService
             Id = x.Id.ToString(),
             Name = x.Name,
             Image = $"{x.Album?.Hash}.jpg",
-            Artist = new ArtistInfoDto
-            {
-                Hash = x.Artist?.Hash,
-                Name = x.Artist?.Name
-            },
+            // Artist = new ArtistInfoDto
+            // {
+            //     Hash = x.Artist?.Hash,
+            //     Name = x.Artist?.Name
+            // },
             DateCreated = x.DateCreated
         }).ToList();
 

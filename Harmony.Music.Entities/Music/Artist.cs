@@ -11,7 +11,7 @@ public class Artist : BaseEntity
     [MaxLength(50)]
     public string? Image { get; set; }
     
-    [MaxLength(400)]
+    [MaxLength(1000)]
     public string? Name { get; set; }
     public string? Bio { get; set; }
     
@@ -21,15 +21,7 @@ public class Artist : BaseEntity
     [Column(TypeName = "jsonb")]
     public List<string>? Tags { get; set; }
     
-    [MaxLength(150)]
-    public string? MetalArchivesUrl { get; set; }
-    
-    [MaxLength(150)]
-    public string? SpotifyProfile { get; set; }
-    
-    [MaxLength(150)]
-    public string? LastfmProfile { get; set; }
+    // TODO: Social network profiles list
 
-    public virtual ICollection<Library> Libraries { get; set; } = new List<Library>();
     public virtual ICollection<Song>? Songs { get; set; } = new HashSet<Song>();
 }
