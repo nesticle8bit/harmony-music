@@ -81,7 +81,7 @@ public class MusicService : IMusicService
                         Artist = new ArtistInfoDto { Name = artist },
                         Album = new AlbumInfoDto { Title = metadata.TrackProperties.Album }
                     });
-                    
+
                     SetProcessedLibraryRow(file);
                 }
 
