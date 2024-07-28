@@ -7,6 +7,8 @@ namespace Harmony.Music.Entities.Music;
 
 public class Song : BaseEntity
 {
+    public string Hash { get; set; }
+    
     [MaxLength(45)]
     public string? LibraryId { get; set; }
     public long? AlbumId { get; set; }

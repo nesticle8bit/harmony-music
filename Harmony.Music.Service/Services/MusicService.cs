@@ -24,7 +24,9 @@ public class MusicService : IMusicService
     public LibrarySyncReportDto SyncLibrary()
     {
         LibrarySyncReportDto librarySyncReport = new();
-        List<string> allFiles = GetAllFiles("/mnt/Musica/Music", librarySyncReport.Errors);
+
+        // TODO: Set path from user config
+        List<string> allFiles = GetAllFiles("/mnt/Musica/Music/Black Metal/United States", librarySyncReport.Errors);
 
         librarySyncReport.SongsFound = allFiles.Count;
         librarySyncReport.SongsImported = _repository.LibraryRepository.SyncLibrary(allFiles);
@@ -38,7 +40,7 @@ public class MusicService : IMusicService
         ExtractMusicMetadataReportDto report = new();
         var files = _repository.LibraryRepository.SearchLibraries(null, false)?
             .OrderBy(x => x.Path)
-            .Take(239)
+            .Take(1000)
             .ToList();
 
         if (files?.Count < 1)
@@ -60,17 +62,27 @@ public class MusicService : IMusicService
                 foreach (var artist in metadata.TrackProperties.Artists)
                 {
                     var artistId = GetOrCreateArtist(artist);
-                    var albumId = GetOrCreateAlbum(new Album()
+                    var albumId = GetOrCreateAlbum(new Album
                     {
+                        Artists = new List<long> { artistId.Value },
                         Title = metadata.TrackProperties.Album,
                         Disc = (int)metadata.TrackProperties.Disc,
                         Year = (int)metadata.TrackProperties.Year,
                         Type = AlbumTypesEnum.Pending,
                         Genres = metadata.TrackProperties.Genres?.ToList()
-                    }, new Artist() { Id = artistId.Value, Name = artist });
+                    }, new Artist { Id = artistId.Value, Name = artist });
 
-                    GetOrCreateSong(file.Path, albumId, artistId, metadata);
-                    SetProcessedLibraryRow(file, albumId, artistId);
+                    GetOrCreateSong(new CreateSongDto
+                    {
+                        FilePath = file.Path,
+                        Artists = new List<long> { artistId.Value },
+                        AlbumId = albumId,
+                        Metadata = metadata,
+                        Artist = new ArtistInfoDto { Name = artist },
+                        Album = new AlbumInfoDto { Title = metadata.TrackProperties.Album }
+                    });
+                    
+                    SetProcessedLibraryRow(file);
                 }
 
                 report.SongsImported++;
@@ -207,52 +219,74 @@ public class MusicService : IMusicService
             entity = new Album()
             {
                 Title = album.Title,
+                Artists = album.Artists,
                 Disc = album.Disc,
                 Year = album.Year,
                 Type = album.Type,
                 Genres = album.Genres,
-                Songs = null,
                 Hash = HashHelper.CreateHash([artist.Name, album.Title])
             };
 
             _repository.AlbumRepository.CreateAlbum(entity);
-            _repository.Save();
+        }
+        else
+        {
+            if (entity.Artists == null)
+                entity.Artists = new List<long>();
+
+            entity.Artists.AddRange(entity.Artists);
+            entity.Artists = entity.Artists.Distinct().ToList();
+
+            _repository.AlbumRepository.UpdateAlbum(entity);
         }
 
+        _repository.Save();
         return entity.Id;
     }
 
-    public long GetOrCreateSong(string filePath, long? albumId, long? artistId, MediaMetadataDto metadata)
+    public long GetOrCreateSong(CreateSongDto createSongDto)
     {
-        var song = new Song()
+        string songName = !string.IsNullOrEmpty(createSongDto.Metadata?.TrackProperties?.Title) ? createSongDto.Metadata.TrackProperties.Title?.Trim() : "Unknown";
+        string hashName = HashHelper.CreateHash([createSongDto.Artist.Name, createSongDto.Album.Title, songName]);
+
+        var entity = _repository.SongRepository.SearchSongs(new SearchSongDto
         {
-            AlbumId = albumId.Value,
-            LibraryId = "", // TODO: Send libraryId as parameter
-            Track = (int)metadata.TrackProperties.Track,
-            Name = !string.IsNullOrEmpty(metadata.TrackProperties.Title) ? metadata.TrackProperties.Title?.Trim() : "Unknown",
-            Description = metadata.Description,
-            Mimetype = !string.IsNullOrEmpty(metadata.Mimetype) ? metadata.Mimetype : "unknown",
-            PossiblyCorrupt = metadata.PossiblyCorrupt,
-            Lyrics = metadata.TrackProperties.Lyrics,
-            MediaProperties = metadata.MediaProperties,
-        };
+            AlbumId = createSongDto.AlbumId,
+            LibraryId = createSongDto.LibraryId,
+            Hash = hashName
+        }, true).FirstOrDefault();
 
-        var songCreated = _repository.SongRepository
-            .SearchSongs(new SearchSongDto()
+        if (entity == null)
+        {
+            entity = new Song
             {
-                Name = song.Name,
-                AlbumId = song.AlbumId,
-                Path = filePath
-            }, false)?.FirstOrDefault();
+                AlbumId = createSongDto.AlbumId,
+                LibraryId = createSongDto.LibraryId,
+                Hash = hashName,
+                Track = createSongDto.Metadata?.TrackProperties != null ? (int)createSongDto.Metadata.TrackProperties.Track : 0,
+                Name = !string.IsNullOrEmpty(createSongDto.Metadata?.TrackProperties?.Title) ? createSongDto.Metadata.TrackProperties.Title?.Trim() : "Unknown",
+                Description = createSongDto.Metadata?.Description,
+                Mimetype = !string.IsNullOrEmpty(createSongDto.Metadata?.Mimetype) ? createSongDto.Metadata.Mimetype : "unknown",
+                PossiblyCorrupt = createSongDto.Metadata?.PossiblyCorrupt ?? true,
+                Lyrics = createSongDto.Metadata?.TrackProperties?.Lyrics,
+                MediaProperties = createSongDto.Metadata?.MediaProperties,
+            };
 
-        if (songCreated != null)
-            throw new Exception(
-                $"The song '{song.Name}' ({metadata.MediaProperties?.Path}) has already been created. You can find it with the ID '{songCreated.Id}'.");
+            _repository.SongRepository.CreateSong(entity);
+        }
+        else
+        {
+            if (entity.Artists == null)
+                entity.Artists = new List<long>();
 
-        _repository.SongRepository.CreateSong(song);
+            entity.Artists.AddRange(entity.Artists);
+            entity.Artists = entity.Artists.Distinct().ToList();
+
+            _repository.SongRepository.UpdateSong(entity);
+        }
+
         _repository.Save();
-
-        return song.Id;
+        return entity.Id;
     }
 
     public MediaMetadataDto? GetMediaMetadata(string file)
@@ -297,7 +331,7 @@ public class MusicService : IMusicService
         return metadata;
     }
 
-    public bool SetProcessedLibraryRow(Library? library, long? albumId, long? artistId)
+    public bool SetProcessedLibraryRow(Library? library)
     {
         if (library is null)
             return false;

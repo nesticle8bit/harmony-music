@@ -38,4 +38,6 @@ public class AlbumRepository : RepositoryBase<Album>, IAlbumRepository
     }
 
     public void CreateAlbum(Album album) => Create(album);
+
+    public void UpdateAlbum(Album album) => Update(album);
 }

@@ -8,4 +8,6 @@ public interface IAlbumRepository
     IQueryable<Album> SearchAlbums(SearchAlbumDto? search, bool trackChanges);
 
     void CreateAlbum(Album album);
+    
+    void UpdateAlbum(Album album);
 }

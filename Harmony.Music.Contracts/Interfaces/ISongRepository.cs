@@ -8,4 +8,6 @@ public interface ISongRepository
     IQueryable<Song> SearchSongs(SearchSongDto? search, bool trackChanges);
     
     void CreateSong(Song song);
+
+    void UpdateSong(Song song);
 }

@@ -22,10 +22,13 @@ public class SongRepository : RepositoryBase<Song>, ISongRepository
         {
             if (search.Id.HasValue)
                 query = query.Where(x => x.Id == search.Id.Value);
-            
+
             if (search.AlbumId.HasValue)
                 query = query.Where(x => x.AlbumId == search.AlbumId.Value);
-            
+
+            if (!string.IsNullOrEmpty(search.LibraryId))
+                query = query.Where(x => x.LibraryId != null && x.LibraryId == search.LibraryId);
+
             if (search.AudioBitrate.HasValue)
                 query = query.AsEnumerable()
                     .Where(x => x.MediaProperties != null && x.MediaProperties.AudioBitrate == search.AudioBitrate.Value)
@@ -35,10 +38,15 @@ public class SongRepository : RepositoryBase<Song>, ISongRepository
                 query = query.AsEnumerable()
                     .Where(x => x.MediaProperties != null && x.MediaProperties.Path == search.Path)
                     .AsQueryable();
+
+            if (!string.IsNullOrEmpty(search.Hash))
+                query = query.Where(x => x.Hash == search.Hash);
         }
 
         return query;
     }
 
     public void CreateSong(Song song) => Create(song);
+
+    public void UpdateSong(Song song) => Update(song);
 }
