@@ -25,6 +25,13 @@ public class SongsMap : IEntityTypeConfiguration<Song>
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
                 v => JsonSerializer.Deserialize<MediaPropertyDto>(v, (JsonSerializerOptions?)null)
             );
+        
+        builder.Property(x => x.Artists)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => JsonSerializer.Deserialize<List<long>>(v, (JsonSerializerOptions?)null)
+            );
     }
 }
 
@@ -41,6 +48,13 @@ public class AlbumsMap : IEntityTypeConfiguration<Album>
             .HasConversion(
                 v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
                 v => JsonSerializer.Deserialize<List<string>>(v, (JsonSerializerOptions?)null)
+            );
+        
+        builder.Property(x => x.Artists)
+            .HasColumnType("jsonb")
+            .HasConversion(
+                v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                v => JsonSerializer.Deserialize<List<long>>(v, (JsonSerializerOptions?)null)
             );
     }
 }

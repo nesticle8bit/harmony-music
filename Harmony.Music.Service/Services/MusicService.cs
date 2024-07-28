@@ -3,6 +3,7 @@ using Harmony.Music.Contracts.Manager;
 using Harmony.Music.Entities.Music;
 using Harmony.Music.ServiceContracts.Services;
 using Harmony.Music.Shared.DataTransferObjects;
+using Harmony.Music.Shared.DataTransferObjects.Library;
 using Harmony.Music.Shared.DataTransferObjects.Music;
 using Harmony.Music.Shared.Enums;
 using Harmony.Music.Shared.Helpers;
@@ -79,10 +80,11 @@ public class MusicService : IMusicService
                         AlbumId = albumId,
                         Metadata = metadata,
                         Artist = new ArtistInfoDto { Name = artist },
-                        Album = new AlbumInfoDto { Title = metadata.TrackProperties.Album }
+                        Album = new AlbumInfoDto { Title = metadata.TrackProperties.Album },
+                        LibraryId = file.Id
                     });
 
-                    SetProcessedLibraryRow(file);
+                    SetProcessedLibraryRow(file.Id);
                 }
 
                 report.SongsImported++;
@@ -193,7 +195,9 @@ public class MusicService : IMusicService
 
     public long? GetOrCreateArtist(string artist)
     {
-        var entity = _repository.ArtistRepository.SearchArtist(new SearchArtistDto() { Name = artist }, false)?.FirstOrDefault();
+        var entity = _repository.ArtistRepository
+            .SearchArtist(new SearchArtistDto { Name = artist }, false)
+            .FirstOrDefault();
 
         if (entity == null)
         {
@@ -212,7 +216,9 @@ public class MusicService : IMusicService
 
     public long? GetOrCreateAlbum(Album album, Artist? artist)
     {
-        var entity = _repository.AlbumRepository.SearchAlbums(new SearchAlbumDto() { Title = album.Title, ArtistId = artist.Id }, false)?.FirstOrDefault();
+        var entity = _repository.AlbumRepository
+            .SearchAlbums(new SearchAlbumDto { Title = album.Title, ArtistId = artist?.Id }, true)
+            .FirstOrDefault();
 
         if (entity == null)
         {
@@ -263,6 +269,7 @@ public class MusicService : IMusicService
                 AlbumId = createSongDto.AlbumId,
                 LibraryId = createSongDto.LibraryId,
                 Hash = hashName,
+                Artists = createSongDto.Artists,
                 Track = createSongDto.Metadata?.TrackProperties != null ? (int)createSongDto.Metadata.TrackProperties.Track : 0,
                 Name = !string.IsNullOrEmpty(createSongDto.Metadata?.TrackProperties?.Title) ? createSongDto.Metadata.TrackProperties.Title?.Trim() : "Unknown",
                 Description = createSongDto.Metadata?.Description,
@@ -279,7 +286,7 @@ public class MusicService : IMusicService
             if (entity.Artists == null)
                 entity.Artists = new List<long>();
 
-            entity.Artists.AddRange(entity.Artists);
+            entity.Artists.AddRange(createSongDto.Artists);
             entity.Artists = entity.Artists.Distinct().ToList();
 
             _repository.SongRepository.UpdateSong(entity);
@@ -331,13 +338,16 @@ public class MusicService : IMusicService
         return metadata;
     }
 
-    public bool SetProcessedLibraryRow(Library? library)
+    public bool SetProcessedLibraryRow(string? libraryId)
     {
-        if (library is null)
+        var entity = _repository.LibraryRepository.SearchLibraries(new SearchLibraryDto { Id = libraryId }, true)
+            .FirstOrDefault();
+
+        if (entity == null)
             return false;
 
-        library.HasBeenProcessed = true;
-        _repository.LibraryRepository.UpdateLibrary(library);
+        entity.HasBeenProcessed = true;
+        _repository.LibraryRepository.UpdateLibrary(entity);
 
         return true;
     }
