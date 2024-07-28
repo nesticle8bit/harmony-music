@@ -90,7 +90,6 @@ namespace Harmony.Music.API.Migrations
                     PossiblyCorrupt = table.Column<bool>(type: "boolean", nullable: false),
                     Lyrics = table.Column<string>(type: "text", nullable: true),
                     MediaProperties = table.Column<string>(type: "jsonb", nullable: true),
-                    ArtistId = table.Column<long>(type: "bigint", nullable: true),
                     DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -101,12 +100,6 @@ namespace Harmony.Music.API.Migrations
                         column: x => x.AlbumId,
                         principalSchema: "music",
                         principalTable: "albums",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_songs_artists_ArtistId",
-                        column: x => x.ArtistId,
-                        principalSchema: "music",
-                        principalTable: "artists",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_songs_library_LibraryId",
@@ -144,12 +137,6 @@ namespace Harmony.Music.API.Migrations
                 column: "AlbumId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_songs_ArtistId",
-                schema: "music",
-                table: "songs",
-                column: "ArtistId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_songs_Id",
                 schema: "music",
                 table: "songs",
@@ -167,15 +154,15 @@ namespace Harmony.Music.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "artists",
+                schema: "music");
+
+            migrationBuilder.DropTable(
                 name: "songs",
                 schema: "music");
 
             migrationBuilder.DropTable(
                 name: "albums",
-                schema: "music");
-
-            migrationBuilder.DropTable(
-                name: "artists",
                 schema: "music");
 
             migrationBuilder.DropTable(

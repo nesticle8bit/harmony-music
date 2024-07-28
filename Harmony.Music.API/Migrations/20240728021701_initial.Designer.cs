@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Harmony.Music.API.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20240728020525_initial")]
+    [Migration("20240728021701_initial")]
     partial class initial
     {
         /// <inheritdoc />
@@ -147,9 +147,6 @@ namespace Harmony.Music.API.Migrations
                     b.Property<long?>("AlbumId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("ArtistId")
-                        .HasColumnType("bigint");
-
                     b.Property<List<long>>("Artists")
                         .HasColumnType("jsonb");
 
@@ -188,8 +185,6 @@ namespace Harmony.Music.API.Migrations
 
                     b.HasIndex("AlbumId");
 
-                    b.HasIndex("ArtistId");
-
                     b.HasIndex("Id")
                         .IsUnique();
 
@@ -204,10 +199,6 @@ namespace Harmony.Music.API.Migrations
                         .WithMany("Songs")
                         .HasForeignKey("AlbumId");
 
-                    b.HasOne("Harmony.Music.Entities.Music.Artist", null)
-                        .WithMany("Songs")
-                        .HasForeignKey("ArtistId");
-
                     b.HasOne("Harmony.Music.Entities.Music.Library", null)
                         .WithMany("Songs")
                         .HasForeignKey("LibraryId");
@@ -216,11 +207,6 @@ namespace Harmony.Music.API.Migrations
                 });
 
             modelBuilder.Entity("Harmony.Music.Entities.Music.Album", b =>
-                {
-                    b.Navigation("Songs");
-                });
-
-            modelBuilder.Entity("Harmony.Music.Entities.Music.Artist", b =>
                 {
                     b.Navigation("Songs");
                 });
