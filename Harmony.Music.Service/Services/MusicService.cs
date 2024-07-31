@@ -41,7 +41,7 @@ public class MusicService : IMusicService
         ExtractMusicMetadataReportDto report = new();
         var files = _repository.LibraryRepository.SearchLibraries(null, false)?
             .OrderBy(x => x.Path)
-            .Take(1000)
+            // .Take(1000)
             .ToList();
 
         if (files?.Count < 1)
@@ -348,6 +348,7 @@ public class MusicService : IMusicService
 
         entity.HasBeenProcessed = true;
         _repository.LibraryRepository.UpdateLibrary(entity);
+        _repository.Save();
 
         return true;
     }
