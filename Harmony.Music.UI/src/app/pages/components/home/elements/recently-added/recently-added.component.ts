@@ -3,6 +3,7 @@ import { Playlist } from '../../../../../models/playlist.model';
 import { IPlaylistService } from '../../../../../services/playlist.interface';
 import { IPlayerService } from '../../../../../services/player.interface';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../../../../environments/environment';
 
 @Component({
   selector: 'app-recently-added',
@@ -12,6 +13,7 @@ import { RouterModule } from '@angular/router';
   styleUrl: './recently-added.component.scss',
 })
 export class RecentlyAddedComponent implements OnInit {
+  public imagePath: string = `${environment.apiUrl}/albums`;
   public recentlyAdded: Playlist[] = [];
 
   constructor(

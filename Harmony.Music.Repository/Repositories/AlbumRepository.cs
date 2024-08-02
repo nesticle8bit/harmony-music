@@ -18,6 +18,9 @@ public class AlbumRepository : RepositoryBase<Album>, IAlbumRepository
 
         if (search != null)
         {
+            if (search.Id.HasValue)
+                query = query.Where(x => x.Id == search.Id.Value);
+            
             if (!string.IsNullOrEmpty(search?.Title))
                 query = query.Where(x => x.Title != null && x.Title.ToLower().Trim() == search.Title.ToLower().Trim());
 

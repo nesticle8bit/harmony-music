@@ -13,8 +13,11 @@ public class LibraryRepository : RepositoryBase<Library>, ILibraryRepository
 
     public IQueryable<Library> SearchLibraries(SearchLibraryDto? search, bool trackChanges)
     {
-        var query = FindByCondition(x => !string.IsNullOrEmpty(x.Path) && x.HasBeenProcessed == false, trackChanges);
+        var query = FindByCondition(x => !string.IsNullOrEmpty(x.Path), trackChanges); // && x.HasBeenProcessed == false
 
+        if (!string.IsNullOrEmpty(search.Id))
+            query = query.Where(x => x.Id == search.Id);
+        
         if (!string.IsNullOrEmpty(search?.Path))
             query = query.Where(x => x.Path.ToLower().Contains(search.Path.ToLower()));
 
