@@ -25,24 +25,34 @@ public class PlaylistService : IPlaylistService
             .OrderByDescending(x => x.Id)
             .Include(x => x.Album)
             .Take(12)
+            .ToList()
+            .SelectMany(song => song.Artists.Select(artistId => new { Song = song, ArtistId = artistId }))
+            .Join(_repository.ArtistRepository.SearchArtist(null, false),
+                songArtist => songArtist.ArtistId,
+                artist => artist.Id,
+                (songArtist, artist) => new
+                {
+                    songArtist.Song,
+                    Artist = artist
+                })
             .ToList();
 
         var playlists = new List<PlaylistDto>();
 
         if (recentlyAdded is null)
             return playlists;
-
-        playlists = recentlyAdded.Select(x => new PlaylistDto()
+        
+        playlists = recentlyAdded.Select(x => new PlaylistDto
         {
-            Id = x.Id.ToString(),
-            Name = x.Name,
-            Image = $"{x.Album?.Hash}.jpg",
-            // Artist = new ArtistInfoDto
-            // {
-            //     Hash = x.Artist?.Hash,
-            //     Name = x.Artist?.Name
-            // },
-            DateCreated = x.DateCreated
+            Id = x.Song.Id.ToString(),
+            Name = x.Song.Name,
+            Image = $"{x.Song.Album?.Hash}.jpg",
+            Artist = new ArtistInfoDto
+            {
+                Name = x.Artist.Name,
+                Hash = x.Artist.Hash,
+            },
+            DateCreated = x.Song.DateCreated
         }).ToList();
 
         return playlists;
