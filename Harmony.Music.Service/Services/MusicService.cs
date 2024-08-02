@@ -104,8 +104,18 @@ public class MusicService : IMusicService
 
     public int ExtractAlbumsArtwork()
     {
-        var albumsWithoutArtwork = _repository.AlbumRepository.SearchAlbums(new SearchAlbumDto() { HasArtwork = false }, false)
+        var albumsWithoutArtwork = _repository.AlbumRepository.SearchAlbums(new SearchAlbumDto { HasArtwork = false }, false)
             .Take(1000)
+            .Select(album => new
+            {
+                album.Id,
+                album.Hash,
+                Song = album.Songs.OrderByDescending(x => x.Id).Select(s => new
+                {
+                    s.Id,
+                    s.LibraryId
+                }).FirstOrDefault()
+            })
             .ToList();
 
         if (albumsWithoutArtwork?.Count < 1)
@@ -115,15 +125,26 @@ public class MusicService : IMusicService
 
         foreach (var album in albumsWithoutArtwork)
         {
-            // ExtractAlbumArt(metadata, "06225f58c6");
+            if (album.Song?.LibraryId == null)
+                continue;
+            
+            var library = _repository.LibraryRepository.SearchLibraries(new SearchLibraryDto { Id = album.Song.LibraryId }, false).FirstOrDefault();
+
+            if (library == null)
+                continue;
+            
+            bool extracted = ExtractAlbumArt(library.Path, album.Hash);
+            
+            if(extracted)
+                processed++;
         }
 
         return processed;
     }
 
-    public void ExtractAlbumArt(MediaMetadataDto metadata, string albumHash)
+    public bool ExtractAlbumArt(string path, string albumHash)
     {
-        var directory = Path.GetDirectoryName(metadata.Name);
+        var directory = Path.GetDirectoryName(path);
         string[] extensions = [".jpg", ".jpeg", ".png", ".bmp"];
         string[] fileNames = ["cover", "albumart", "folder"];
 
@@ -140,19 +161,45 @@ public class MusicService : IMusicService
         }
 
         if (string.IsNullOrEmpty(albumart))
-            return;
+        {
+            return ExtractAlbumArtFromFile(path, albumHash);
+        }
+        else
+        {
+            SaveAlbumArtInPath(albumart, albumHash);
+            return true;
+        }
+    }
 
+    public void SaveAlbumArtInPath(string albumArt, string albumHash, byte[]? albumArtByte = null)
+    {
         var imageFolder = Path.Combine("./", "wwwroot", "albums", albumHash);
 
         if (!Directory.Exists(imageFolder))
             Directory.CreateDirectory(imageFolder);
 
-        File.Copy(albumart, Path.Combine(imageFolder, $"{albumHash}{Path.GetExtension(albumart)}"), true);
+        if(albumArtByte == null)
+            File.Copy(albumArt, Path.Combine(imageFolder, $"{albumHash}.png"), true);
+        else
+            File.WriteAllBytes(Path.Combine(imageFolder, $"{albumHash}.png"), albumArtByte);
+    }
+
+    public bool ExtractAlbumArtFromFile(string path, string albumHash)
+    {
+        var tagLib = TagLib.File.Create(path);
+        
+        if (tagLib.Tag.Pictures.Length < 1)
+            return false;
+
+        var picture = tagLib.Tag.Pictures[0].Data.Data;
+        SaveAlbumArtInPath("", albumHash, picture);
+        
+        return true;
     }
 
     public string? GetFilePathBySongId(long? songId)
     {
-        var song = _repository.SongRepository.SearchSongs(new SearchSongDto() { Id = songId }, false)?.FirstOrDefault();
+        var song = _repository.SongRepository.SearchSongs(new SearchSongDto { Id = songId }, false)?.FirstOrDefault();
 
         if (song == null)
             return string.Empty;
